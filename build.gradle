@@ -1,0 +1,34 @@
+apply plugin: 'java'
+apply plugin: 'jacoco'
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
+repositories {
+    mavenCentral()
+
+    maven {
+        url 'http://repository.apache.org/content/repositories/snapshots'
+    }
+}
+
+jacocoTestReport {
+    dependsOn test
+    reports {
+        xml.enabled false
+        csv.enabled false
+        html.destination "${buildDir}/jacocoHtml"
+    }
+}
+
+dependencies {
+    compile 'org.apache.logging.log4j:log4j-core:2.1'
+    compile 'org.projectlombok:lombok:1.14.8'
+    compile 'com.google.inject:guice:3.0'
+    compile 'com.google.inject.extensions:guice-multibindings:3.0'
+    compile 'org.apache.onami.lifecycle:org.apache.onami.lifecycle.jsr250:0.2.0-SNAPSHOT'
+    compile 'org.apache.onami:org.apache.onami.test:1.4.0-incubating'
+    compile 'commons-beanutils:commons-beanutils:1.9.2'
+
+    testCompile 'junit:junit:4.+'
+}
