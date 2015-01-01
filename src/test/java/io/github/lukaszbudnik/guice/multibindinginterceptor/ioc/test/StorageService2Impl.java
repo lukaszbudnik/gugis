@@ -11,8 +11,12 @@ public class StorageService2Impl extends AbstractTestStorageService implements S
 
     @Override
     public int put(String item) {
-        called();
         log.trace(this.getClass().getSimpleName() + ".put = " + item);
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+        }
+        called();
         return 2;
     }
 

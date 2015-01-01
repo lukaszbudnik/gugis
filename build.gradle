@@ -26,9 +26,8 @@ dependencies {
     compile 'org.projectlombok:lombok:1.14.8'
     compile 'com.google.inject:guice:3.0'
     compile 'com.google.inject.extensions:guice-multibindings:3.0'
-    compile 'org.apache.onami.lifecycle:org.apache.onami.lifecycle.jsr250:0.2.0-SNAPSHOT'
-    compile 'org.apache.onami:org.apache.onami.test:1.4.0-incubating'
     compile 'commons-beanutils:commons-beanutils:1.9.2'
 
+    testCompile 'org.apache.onami:org.apache.onami.test:1.4.0-incubating'
     testCompile 'junit:junit:4.+'
 }

@@ -17,12 +17,12 @@ public class CompositeStorageService implements StorageService {
         return null;
     }
 
-    @Replicate(propagation = Propagation.SECONDARY_ONLY)
+    @Replicate(propagation = Propagation.SECONDARY)
     @Override
     public void refresh(int id) {
     }
 
-    @Replicate(propagation = Propagation.PRIMARY_ONLY)
+    @Replicate(propagation = Propagation.PRIMARY)
     @Override
     public void delete(int id) {
     }
