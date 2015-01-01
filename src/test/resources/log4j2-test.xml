@@ -6,7 +6,8 @@
         </Console>
     </Appenders>
     <Loggers>
-        <Logger name="io.github.lukaszbudnik.guice.multibindinginterceptor.ioc.ReplicatorInterceptor" level="debug" additivity="false">
+        <Logger name="io.github.lukaszbudnik.guice.multibindinginterceptor.ioc.ReplicatorInterceptor" level="debug"
+                additivity="false">
             <AppenderRef ref="Console"/>
         </Logger>
         <Logger name="io.github.lukaszbudnik.guice.multibindinginterceptor.ioc.test" level="trace" additivity="false">
