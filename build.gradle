@@ -1,8 +1,14 @@
 plugins {
     id 'java'
-    id 'com.github.hierynomus.license' version '0.11.0'
     id 'jacoco'
+    id 'maven'
+    id 'signing'
+    id 'com.github.hierynomus.license' version '0.11.0'
 }
+
+group = 'com.github.lukaszbudnik.gugis'
+archivesBaseName = 'gugis'
+version = '0.3'
 
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
@@ -37,10 +43,69 @@ dependencies {
     testCompile 'junit:junit:4.+'
 }
 
+
 license {
     header project.file('HEADER')
 
     ext.year = Calendar.getInstance().get(Calendar.YEAR)
     ext.name = 'Łukasz Budnik'
     ext.email = 'lukasz.budnik@gmail.com'
+}
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+artifacts {
+    archives sourcesJar
+}
+
+signing {
+    sign configurations.archives
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                authentication(userName: ossrhUsername, password: ossrhPassword)
+            }
+
+            snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                authentication(userName: ossrhUsername, password: ossrhPassword)
+            }
+
+            pom.project {
+                name 'gugis'
+                packaging 'jar'
+                // optionally artifactId can be defined here
+                description 'Lightweight and robust framework using guice multibindings to create composite components.'
+                url 'https://github.com/lukaszbudnik/gugis'
+
+                scm {
+                    connection 'scm:git:git@github.com:lukaszbudnik/gugis.git'
+                    developerConnection 'scm:git:git@github.com:lukaszbudnik/gugis.git'
+                    url 'git@github.com:lukaszbudnik/gugis.git'
+                }
+
+                licenses {
+                    license {
+                        name 'The Apache License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id 'lukaszbudnik'
+                        name 'Łukasz Budnik'
+                        email 'lukasz.budnik@gmail.com'
+                    }
+                }
+            }
+        }
+    }
 }
