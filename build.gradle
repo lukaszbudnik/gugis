@@ -1,5 +1,8 @@
-apply plugin: 'java'
-apply plugin: 'jacoco'
+plugins {
+    id 'java'
+    id 'com.github.hierynomus.license' version '0.11.0'
+    id 'jacoco'
+}
 
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
@@ -32,4 +35,12 @@ dependencies {
 
     testCompile 'org.apache.onami:org.apache.onami.test:1.4.0-incubating'
     testCompile 'junit:junit:4.+'
+}
+
+license {
+    header project.file('HEADER')
+
+    ext.year = Calendar.getInstance().get(Calendar.YEAR)
+    ext.name = 'Łukasz Budnik'
+    ext.email = 'lukasz.budnik@gmail.com'
 }
