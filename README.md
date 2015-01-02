@@ -1,7 +1,21 @@
 gugis [![Build Status](https://travis-ci.org/lukaszbudnik/gugis.svg?branch=master)](https://travis-ci.org/lukaszbudnik/gugis)
 ==============================
 
-Lightweight and robust framework using guice multibindings to create composite components.
+Lightweight and robust framework for creating composite components using Guice.
+
+# Download
+
+Use the following Maven dependency:
+
+```xml
+<dependency>
+  <groupId>com.github.lukaszbudnik.gugis</groupId>
+  <artifactId>gugis</artifactId>
+  <version>0.3</version>
+</dependency>
+```
+
+or convert it to your favourite dependency management tool like: Gradle (gugis uses Gradle), Buildr, Ivy, sbt, Leiningen, etc.
 
 # License
 

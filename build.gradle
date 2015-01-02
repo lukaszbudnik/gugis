@@ -40,9 +40,8 @@ dependencies {
     compile 'org.atteo.classindex:classindex:3.3'
 
     testCompile 'org.apache.onami:org.apache.onami.test:1.4.0-incubating'
-    testCompile 'junit:junit:4.+'
+    testCompile 'junit:junit:4.12'
 }
-
 
 license {
     header project.file('HEADER')
@@ -57,8 +56,13 @@ task sourcesJar(type: Jar) {
     from sourceSets.main.allSource
 }
 
+task javadocJar(type: Jar) {
+    classifier = 'javadoc'
+    from javadoc
+}
+
 artifacts {
-    archives sourcesJar
+    archives javadocJar, sourcesJar
 }
 
 signing {
@@ -82,7 +86,7 @@ uploadArchives {
                 name 'gugis'
                 packaging 'jar'
                 // optionally artifactId can be defined here
-                description 'Lightweight and robust framework using guice multibindings to create composite components.'
+                description 'Lightweight and robust framework for creating composite components using Guice.'
                 url 'https://github.com/lukaszbudnik/gugis'
 
                 scm {
