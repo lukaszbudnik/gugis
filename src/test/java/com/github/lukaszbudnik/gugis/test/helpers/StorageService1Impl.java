@@ -1,13 +1,14 @@
-package com.github.lukaszbudnik.guice.multibindinginterceptor.ioc.test;
+package com.github.lukaszbudnik.gugis.test.helpers;
 
-import com.github.lukaszbudnik.guice.multibindinginterceptor.ioc.Secondary;
-import com.google.inject.Singleton;
+import com.github.lukaszbudnik.gugis.Secondary;
 import lombok.extern.log4j.Log4j2;
+
+import javax.inject.Singleton;
 
 @Secondary
 @Singleton
 @Log4j2
-public class StorageService1Impl extends AbstractTestStorageService implements StorageService {
+public class StorageService1Impl extends AbstractTestService implements StorageService {
 
     @Override
     public int put(String item) {

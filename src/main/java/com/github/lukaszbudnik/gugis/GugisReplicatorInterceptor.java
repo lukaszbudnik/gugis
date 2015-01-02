@@ -1,9 +1,9 @@
-package com.github.lukaszbudnik.guice.multibindinginterceptor.ioc;
+package com.github.lukaszbudnik.gugis;
 
 import com.google.inject.Binding;
 import com.google.inject.Injector;
 import com.google.inject.TypeLiteral;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.apache.commons.beanutils.MethodUtils;
@@ -13,8 +13,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@Log4j2
-public class ReplicatorInterceptor implements MethodInterceptor {
+@Slf4j
+public class GugisReplicatorInterceptor implements MethodInterceptor {
 
     @Inject
     Injector injector;
@@ -37,7 +37,7 @@ public class ReplicatorInterceptor implements MethodInterceptor {
 
         if (bindings.size() == 0) {
             log.error("No bindings found for " + clazz);
-            throw new RuntimeException("No bindings found for " + clazz);
+            throw new GugisException("No bindings found for " + clazz);
         }
 
         if (log.isDebugEnabled()) {
@@ -51,7 +51,7 @@ public class ReplicatorInterceptor implements MethodInterceptor {
                 results = executeBindings(filtered, i.getMethod().getName(), i.getArguments());
                 if (results.size() == 0) {
                     log.error("No results for primary implementation found for " + clazz);
-                    throw new RuntimeException("No primary implementation found for " + clazz);
+                    throw new GugisException("No primary implementation found for " + clazz);
                 }
                 break;
             }
@@ -60,7 +60,7 @@ public class ReplicatorInterceptor implements MethodInterceptor {
                 results = executeBindings(filtered, i.getMethod().getName(), i.getArguments());
                 if (results.size() == 0) {
                     log.error("No results for secondary implementation found for " + clazz);
-                    throw new RuntimeException("No secondary implementation found for " + clazz);
+                    throw new GugisException("No secondary implementation found for " + clazz);
                 }
                 break;
             }
@@ -76,7 +76,7 @@ public class ReplicatorInterceptor implements MethodInterceptor {
 
                 if (results.size() == 0) {
                     log.error("None of the bindings returned value for " + clazz);
-                    throw new RuntimeException("None of the bindings returned value for " + clazz);
+                    throw new GugisException("None of the bindings returned value for " + clazz);
                 }
 
                 break;
@@ -99,7 +99,7 @@ public class ReplicatorInterceptor implements MethodInterceptor {
                 Object component = binding.getProvider().get();
                 return MethodUtils.invokeMethod(component, methodName, arguments);
             } catch (Exception e) {
-                throw new RuntimeException(e);
+                throw new GugisException(e);
             }
         }).collect(Collectors.toList());
         return results;
