@@ -1,13 +1,13 @@
 package com.github.lukaszbudnik.gugis.test.helpers;
 
 import com.github.lukaszbudnik.gugis.Secondary;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Singleton;
 
 @Secondary
 @Singleton
-@Log4j2
+@Slf4j
 public class StorageService1Impl extends AbstractTestService implements StorageService {
 
     @Override
