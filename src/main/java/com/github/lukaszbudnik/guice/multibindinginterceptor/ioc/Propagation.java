@@ -1,4 +1,4 @@
-package io.github.lukaszbudnik.guice.multibindinginterceptor.ioc;
+package com.github.lukaszbudnik.guice.multibindinginterceptor.ioc;
 
 public enum Propagation {
     ALL, // ALL = all primaries and all secondaries

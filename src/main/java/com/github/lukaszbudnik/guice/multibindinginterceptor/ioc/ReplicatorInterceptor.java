@@ -1,4 +1,4 @@
-package io.github.lukaszbudnik.guice.multibindinginterceptor.ioc;
+package com.github.lukaszbudnik.guice.multibindinginterceptor.ioc;
 
 import com.google.inject.Binding;
 import com.google.inject.Injector;

@@ -1,4 +1,4 @@
-package io.github.lukaszbudnik.guice.multibindinginterceptor.ioc.test;
+package com.github.lukaszbudnik.guice.multibindinginterceptor.ioc.test;
 
 // Mockito and EasyMock are swallowing annotations when creating mocks
 // thus a home made workaround for tracing if method was called
