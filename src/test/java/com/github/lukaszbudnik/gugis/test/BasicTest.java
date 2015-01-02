@@ -1,10 +1,15 @@
-package com.github.lukaszbudnik.guice.multibindinginterceptor.ioc.test;
+package com.github.lukaszbudnik.gugis.test;
 
-import com.github.lukaszbudnik.guice.multibindinginterceptor.ioc.MultibindingInterceptorModule;
+import com.github.lukaszbudnik.gugis.GugisModule;
+import com.github.lukaszbudnik.gugis.test.helpers.CompositeStorageService;
+import com.github.lukaszbudnik.gugis.test.helpers.StorageService;
+import com.github.lukaszbudnik.gugis.test.helpers.StorageService1Impl;
+import com.github.lukaszbudnik.gugis.test.helpers.StorageService2Impl;
 import org.apache.onami.test.OnamiRunner;
 import org.apache.onami.test.annotation.GuiceModules;
 import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -12,8 +17,8 @@ import javax.inject.Inject;
 import java.util.Set;
 
 @RunWith(OnamiRunner.class)
-@GuiceModules({MultibindingInterceptorModule.class, TestModule.class})
-public class MultibindingInterceptorReplicateTest {
+@GuiceModules(GugisModule.class)
+public class BasicTest {
 
     @Inject
     private Set<StorageService> storageServices;
@@ -28,7 +33,8 @@ public class MultibindingInterceptorReplicateTest {
     private StorageService2Impl primary;
 
     @After
-    public void after() {
+    @Before
+    public void reset() {
         primary.reset();
         secondary.reset();
     }

@@ -1,8 +1,13 @@
-package com.github.lukaszbudnik.guice.multibindinginterceptor.ioc.test;
+package com.github.lukaszbudnik.gugis.test.helpers;
 
-import com.github.lukaszbudnik.guice.multibindinginterceptor.ioc.Propagation;
-import com.github.lukaszbudnik.guice.multibindinginterceptor.ioc.Replicate;
+import com.github.lukaszbudnik.gugis.Composite;
+import com.github.lukaszbudnik.gugis.Propagation;
+import com.github.lukaszbudnik.gugis.Replicate;
 
+import javax.inject.Singleton;
+
+@Composite
+@Singleton
 public class CompositeStorageService implements StorageService {
 
     @Replicate(propagation = Propagation.ALL)

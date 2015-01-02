@@ -1,19 +1,19 @@
-package com.github.lukaszbudnik.guice.multibindinginterceptor.ioc.test;
+package com.github.lukaszbudnik.gugis.test.helpers;
 
 // Mockito and EasyMock are swallowing annotations when creating mocks
 // thus a home made workaround for tracing if method was called
-public class AbstractTestStorageService {
+public class AbstractTestService {
     private boolean called;
 
-    void called() {
+    public void called() {
         called = true;
     }
 
-    boolean wasCalled() {
+    public boolean wasCalled() {
         return called;
     }
 
-    void reset() {
+    public void reset() {
         called = false;
     }
 }

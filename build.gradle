@@ -22,11 +22,13 @@ jacocoTestReport {
 }
 
 dependencies {
+    compile 'org.apache.logging.log4j:log4j-slf4j-impl:2.1'
     compile 'org.apache.logging.log4j:log4j-core:2.1'
     compile 'org.projectlombok:lombok:1.14.8'
     compile 'com.google.inject:guice:3.0'
     compile 'com.google.inject.extensions:guice-multibindings:3.0'
     compile 'commons-beanutils:commons-beanutils:1.9.2'
+    compile 'org.atteo.classindex:classindex:3.3'
 
     testCompile 'org.apache.onami:org.apache.onami.test:1.4.0-incubating'
     testCompile 'junit:junit:4.+'
