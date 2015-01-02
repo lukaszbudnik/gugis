@@ -1,7 +1,7 @@
-package io.github.lukaszbudnik.guice.multibindinginterceptor.ioc.test;
+package com.github.lukaszbudnik.guice.multibindinginterceptor.ioc.test;
 
-import io.github.lukaszbudnik.guice.multibindinginterceptor.ioc.Propagation;
-import io.github.lukaszbudnik.guice.multibindinginterceptor.ioc.Replicate;
+import com.github.lukaszbudnik.guice.multibindinginterceptor.ioc.Propagation;
+import com.github.lukaszbudnik.guice.multibindinginterceptor.ioc.Replicate;
 
 public class CompositeStorageService implements StorageService {
 

@@ -1,4 +1,4 @@
-package io.github.lukaszbudnik.guice.multibindinginterceptor.ioc.test;
+package com.github.lukaszbudnik.guice.multibindinginterceptor.ioc.test;
 
 public interface StorageService {
 

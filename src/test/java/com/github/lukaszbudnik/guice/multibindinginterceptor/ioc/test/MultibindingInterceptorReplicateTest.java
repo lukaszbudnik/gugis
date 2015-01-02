@@ -1,6 +1,6 @@
-package io.github.lukaszbudnik.guice.multibindinginterceptor.ioc.test;
+package com.github.lukaszbudnik.guice.multibindinginterceptor.ioc.test;
 
-import io.github.lukaszbudnik.guice.multibindinginterceptor.ioc.MultibindingInterceptorModule;
+import com.github.lukaszbudnik.guice.multibindinginterceptor.ioc.MultibindingInterceptorModule;
 import org.apache.onami.test.OnamiRunner;
 import org.apache.onami.test.annotation.GuiceModules;
 import org.junit.After;
