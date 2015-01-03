@@ -15,7 +15,7 @@ Use the following Maven dependency:
 </dependency>
 ```
 
-or convert it to your favourite dependency management tool like: Gradle (gugis uses Gradle), Buildr, Ivy, sbt, Leiningen, etc.
+or open [search.maven.org](http://search.maven.org/#artifactdetails|com.github.lukaszbudnik.gugis|gugis|0.3|jar) and copy and paste dependency id for your favourite dependency management tool (Gradle (gugis uses Gradle), Buildr, Ivy, sbt, Leiningen, etc).
 
 # License
 
