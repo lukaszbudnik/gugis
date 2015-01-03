@@ -1,8 +1,14 @@
 plugins {
     id 'java'
-    id 'com.github.hierynomus.license' version '0.11.0'
     id 'jacoco'
+    id 'maven'
+    id 'signing'
+    id 'com.github.hierynomus.license' version '0.11.0'
 }
+
+group = 'com.github.lukaszbudnik.gugis'
+archivesBaseName = 'gugis'
+version = '0.3'
 
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
@@ -34,7 +40,7 @@ dependencies {
     compile 'org.atteo.classindex:classindex:3.3'
 
     testCompile 'org.apache.onami:org.apache.onami.test:1.4.0-incubating'
-    testCompile 'junit:junit:4.+'
+    testCompile 'junit:junit:4.12'
 }
 
 license {
@@ -43,4 +49,73 @@ license {
     ext.year = Calendar.getInstance().get(Calendar.YEAR)
     ext.name = 'Łukasz Budnik'
     ext.email = 'lukasz.budnik@gmail.com'
+}
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar) {
+    classifier = 'javadoc'
+    from javadoc
+}
+
+artifacts {
+    archives javadocJar, sourcesJar
+}
+
+signing {
+    required { gradle.taskGraph.hasTask("uploadArchives") }
+    sign configurations.archives
+}
+
+def deployUsername = hasProperty('ossrhUsername') ? ossrhUsername : System.getenv('DEPLOY_USERNAME')
+
+def deployPassword = hasProperty('ossrhPassword') ? ossrhPassword : System.getenv('DEPLOY_PASSWORD')
+
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                authentication(userName: deployUsername, password: deployPassword)
+            }
+
+            snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                authentication(userName: deployUsername, password: deployPassword)
+            }
+
+            pom.project {
+                name 'gugis'
+                packaging 'jar'
+                // optionally artifactId can be defined here
+                description 'Lightweight and robust framework for creating composite components using Guice.'
+                url 'https://github.com/lukaszbudnik/gugis'
+
+                scm {
+                    connection 'scm:git:git@github.com:lukaszbudnik/gugis.git'
+                    developerConnection 'scm:git:git@github.com:lukaszbudnik/gugis.git'
+                    url 'git@github.com:lukaszbudnik/gugis.git'
+                }
+
+                licenses {
+                    license {
+                        name 'The Apache License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id 'lukaszbudnik'
+                        name 'Łukasz Budnik'
+                        email 'lukasz.budnik@gmail.com'
+                    }
+                }
+            }
+        }
+    }
 }

@@ -1,6 +1,8 @@
 language: java
 jdk:
   - oraclejdk8
+env:
+  - DEPLOY_USERNAME=travis DEPLOY_PASSWORD=secret
 before_install:
   - wget http://services.gradle.org/distributions/gradle-2.2-bin.zip
   - unzip gradle-2.2-bin.zip
