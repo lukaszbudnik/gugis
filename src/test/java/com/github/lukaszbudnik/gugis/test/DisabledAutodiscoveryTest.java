@@ -11,8 +11,8 @@ package com.github.lukaszbudnik.gugis.test;
 
 import com.github.lukaszbudnik.gugis.GugisException;
 import com.github.lukaszbudnik.gugis.GugisModule;
-import com.github.lukaszbudnik.gugis.test.helpers.NotificationServiceComposite;
 import com.github.lukaszbudnik.gugis.test.helpers.NotificationService1Impl;
+import com.github.lukaszbudnik.gugis.test.helpers.NotificationServiceComposite;
 import org.apache.onami.test.OnamiRunner;
 import org.apache.onami.test.annotation.GuiceModules;
 import org.junit.After;

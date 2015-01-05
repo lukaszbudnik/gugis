@@ -25,7 +25,7 @@ public class GugisModule extends AbstractModule {
     protected void configure() {
         GugisReplicatorInterceptor gugisReplicatorInterceptor = new GugisReplicatorInterceptor();
         requestInjection(gugisReplicatorInterceptor);
-        bindInterceptor(Matchers.any(), Matchers.annotatedWith(Replicate.class), gugisReplicatorInterceptor);
+        bindInterceptor(Matchers.any(), Matchers.annotatedWith(Propagate.class), gugisReplicatorInterceptor);
 
         for (Class<?> compositeClass : ClassIndex.getAnnotated(Composite.class)) {
             Composite compositeAnnotation = compositeClass.getAnnotation(Composite.class);

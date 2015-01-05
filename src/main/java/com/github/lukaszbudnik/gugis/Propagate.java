@@ -16,7 +16,8 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface Replicate {
+public @interface Propagate {
     Propagation propagation() default Propagation.ALL;
+
     boolean allowFailure() default false;
 }

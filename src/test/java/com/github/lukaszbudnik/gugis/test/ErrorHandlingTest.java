@@ -11,7 +11,10 @@ package com.github.lukaszbudnik.gugis.test;
 
 import com.github.lukaszbudnik.gugis.GugisException;
 import com.github.lukaszbudnik.gugis.GugisModule;
-import com.github.lukaszbudnik.gugis.test.helpers.*;
+import com.github.lukaszbudnik.gugis.test.helpers.QueueService;
+import com.github.lukaszbudnik.gugis.test.helpers.QueueService1Impl;
+import com.github.lukaszbudnik.gugis.test.helpers.QueueService2Impl;
+import com.github.lukaszbudnik.gugis.test.helpers.QueueServiceComposite;
 import org.apache.onami.test.OnamiRunner;
 import org.apache.onami.test.annotation.GuiceModules;
 import org.junit.After;
