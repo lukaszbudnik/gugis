@@ -18,4 +18,5 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 public @interface Replicate {
     Propagation propagation() default Propagation.ALL;
+    boolean allowFailure() default false;
 }

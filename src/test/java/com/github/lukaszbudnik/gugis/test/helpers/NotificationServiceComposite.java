@@ -15,35 +15,12 @@ import com.github.lukaszbudnik.gugis.Replicate;
 
 import javax.inject.Singleton;
 
-@Composite
+@Composite(autodiscover = false)
 @Singleton
-public class CompositeStorageService implements StorageService {
+public class NotificationServiceComposite implements NotificationService {
 
     @Replicate(propagation = Propagation.ALL)
     @Override
-    public int put(String item) {
-        return 0;
-    }
-
-    @Replicate(propagation = Propagation.ANY)
-    @Override
-    public String get(int id) {
-        return null;
-    }
-
-    @Replicate(propagation = Propagation.FASTEST)
-    @Override
-    public String fastGet(int id) {
-        return null;
-    }
-
-    @Replicate(propagation = Propagation.SECONDARY)
-    @Override
-    public void refresh(int id) {
-    }
-
-    @Replicate(propagation = Propagation.PRIMARY)
-    @Override
-    public void delete(int id) {
+    public void sendNotification(String to) {
     }
 }

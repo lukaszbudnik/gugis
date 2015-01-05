@@ -30,7 +30,7 @@ public class BasicTest {
     private Set<StorageService> storageServices;
 
     @Inject
-    private CompositeStorageService compositeStorageService;
+    private StorageServiceComposite storageServiceComposite;
 
     @Inject
     private StorageService1Impl secondary;
@@ -56,7 +56,7 @@ public class BasicTest {
 
     @Test
     public void shouldInjectCompositeService() {
-        Assert.assertNotNull(compositeStorageService);
+        Assert.assertNotNull(storageServiceComposite);
     }
 
     @Test
@@ -65,7 +65,7 @@ public class BasicTest {
         Assert.assertFalse(primary2.wasCalled());
         Assert.assertFalse(secondary.wasCalled());
 
-        compositeStorageService.put("test");
+        storageServiceComposite.put("test");
 
         Assert.assertTrue(primary1.wasCalled());
         Assert.assertTrue(primary2.wasCalled());
@@ -78,7 +78,7 @@ public class BasicTest {
         Assert.assertFalse(primary2.wasCalled());
         Assert.assertFalse(secondary.wasCalled());
 
-        compositeStorageService.get(0);
+        storageServiceComposite.get(0);
 
         Assert.assertTrue(primary1.wasCalled() | primary2.wasCalled() | secondary.wasCalled());
         Assert.assertFalse(primary1.wasCalled() & primary2.wasCalled() & secondary.wasCalled());
@@ -90,7 +90,7 @@ public class BasicTest {
         Assert.assertFalse(primary2.wasCalled());
         Assert.assertFalse(secondary.wasCalled());
 
-        compositeStorageService.delete(0);
+        storageServiceComposite.delete(0);
 
         Assert.assertTrue(primary1.wasCalled());
         Assert.assertTrue(primary2.wasCalled());
@@ -103,7 +103,7 @@ public class BasicTest {
         Assert.assertFalse(primary2.wasCalled());
         Assert.assertFalse(secondary.wasCalled());
 
-        compositeStorageService.refresh(0);
+        storageServiceComposite.refresh(0);
 
         Assert.assertFalse(primary1.wasCalled());
         Assert.assertFalse(primary2.wasCalled());
@@ -116,7 +116,7 @@ public class BasicTest {
         Assert.assertFalse(primary2.wasCalled());
         Assert.assertFalse(secondary.wasCalled());
 
-        String result = compositeStorageService.fastGet(0);
+        String result = storageServiceComposite.fastGet(0);
 
         // all components were called
         Assert.assertTrue(primary1.wasCalled());

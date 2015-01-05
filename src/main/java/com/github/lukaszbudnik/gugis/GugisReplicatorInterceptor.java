@@ -18,7 +18,7 @@ import org.aopalliance.intercept.MethodInvocation;
 import org.apache.commons.beanutils.MethodUtils;
 
 import javax.inject.Inject;
-import java.util.Arrays;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -40,6 +40,7 @@ public class GugisReplicatorInterceptor implements MethodInterceptor {
 
         if (log.isDebugEnabled()) {
             log.debug("Propagation set to " + replicate.propagation());
+            log.debug("Allow failure set to " + replicate.allowFailure());
         }
 
         Class clazz = i.getMethod().getDeclaringClass().getInterfaces()[0];
@@ -55,82 +56,81 @@ public class GugisReplicatorInterceptor implements MethodInterceptor {
             log.debug("Found " + bindings.size() + " bindings for " + clazz);
         }
 
-        List<Object> results;
+        Stream<Try<Object>> resultStream;
         switch (replicate.propagation()) {
             case FASTEST: {
-                Stream<Object> executedStream = executeBindings(bindings.stream(), i.getMethod().getName(), i.getArguments());
-                Optional<Object> result = executedStream.findAny();
-                if (!result.isPresent()) {
+                boolean allowFailure = false;
+                Stream<Try<Object>> executedStream = executeBindings(allowFailure, bindings.stream(), i.getMethod().getName(), i.getArguments());
+                Optional<Try<Object>> anyResult = executedStream.findAny();
+                if (!anyResult.isPresent()) {
                     log.error("Fastest implementation did not return any value");
                     throw new GugisException("Fastest implementation did not return any value");
                 }
-                results = Arrays.asList(result.get());
+                resultStream = Stream.of(anyResult.get());
                 break;
             }
             case PRIMARY: {
                 Stream<Binding<Object>> filtered = bindings.stream().filter(b -> b.getProvider().get().getClass().isAnnotationPresent(Primary.class));
-                results = executeBindingsAndCollect(filtered, i.getMethod().getName(), i.getArguments());
-                if (results.size() == 0) {
-                    log.error("No results for primary implementation found for " + clazz);
-                    throw new GugisException("No primary implementation found for " + clazz);
-                }
+                resultStream = executeBindings(replicate.allowFailure(), filtered, i.getMethod().getName(), i.getArguments());
                 break;
             }
             case SECONDARY: {
                 Stream<Binding<Object>> filtered = bindings.stream().filter(b -> b.getProvider().get().getClass().isAnnotationPresent(Secondary.class));
-                results = executeBindingsAndCollect(filtered, i.getMethod().getName(), i.getArguments());
-                if (results.size() == 0) {
-                    log.error("No results for secondary implementation found for " + clazz);
-                    throw new GugisException("No secondary implementation found for " + clazz);
-                }
+                resultStream = executeBindings(replicate.allowFailure(), filtered, i.getMethod().getName(), i.getArguments());
                 break;
             }
             default: {
                 // handles both ALL and ANY
                 Stream<Binding<Object>> bindingStream;
+                boolean allowFailure = replicate.allowFailure();
                 if (replicate.propagation() == Propagation.ANY) {
                     bindingStream = bindings.stream().limit(1);
+                    allowFailure = false;
                 } else {
                     bindingStream = bindings.stream();
                 }
-                results = executeBindingsAndCollect(bindingStream, i.getMethod().getName(), i.getArguments());
-
-                if (results.size() == 0) {
-                    log.error("None of the bindings returned value for " + clazz);
-                    throw new GugisException("None of the bindings returned value for " + clazz);
-                }
-
+                resultStream = executeBindings(allowFailure, bindingStream, i.getMethod().getName(), i.getArguments());
                 break;
             }
         }
 
-        // all implementations should be homogeneous and should return same value for same arguments
-        Object object = results.get(0);
+        List<Try<Object>> successList = resultStream.filter(t -> t.isSuccess()).collect(Collectors.toList());
 
-        if (log.isDebugEnabled()) {
-            log.debug("Method " + i.getMethod() + " returns " + object);
+        if (successList.size() == 0) {
+            log.error("No result for " + replicate.propagation() + " implementation found for " + clazz);
+            throw new GugisException("No result for " + replicate.propagation() + " found for " + clazz + "." + i.getMethod().getName());
         }
 
-        return object;
+        // all implementations should be homogeneous and should return same value for same arguments
+        Try<Object> tryObject = successList.get(0);
+
+        if (log.isDebugEnabled()) {
+            log.debug("Method " + i.getMethod() + " returns " + tryObject.get());
+        }
+
+        return tryObject.get();
     }
 
-    public Stream<Object> executeBindings(Stream<Binding<Object>> bindings, String methodName, Object[] arguments) {
-        Stream<Object> executedBindingsStream = bindings.parallel().map(binding -> {
+    public Stream<Try<Object>> executeBindings(boolean allowFailure, Stream<Binding<Object>> bindings, String methodName, Object[] arguments) {
+        Stream<Try<Object>> executedBindingsStream = bindings.parallel().map(binding -> {
             try {
                 Object component = binding.getProvider().get();
-                return MethodUtils.invokeMethod(component, methodName, arguments);
-            } catch (Exception e) {
+                return new Success<Object>(MethodUtils.invokeMethod(component, methodName, arguments));
+            } catch (InvocationTargetException e) {
+                if (!allowFailure) {
+                    throw new GugisException(e);
+                }
+                return new Failure<Object>(e.getCause());
+            } catch (NoSuchMethodException | IllegalAccessException e) {
                 throw new GugisException(e);
             }
         });
         return executedBindingsStream;
     }
 
-    public List<Object> executeBindingsAndCollect(Stream<Binding<Object>> bindings, String methodName, Object[] arguments) {
-        Stream<Object> executedBindingsStream = executeBindings(bindings, methodName, arguments);
-
-        List<Object> results = executedBindingsStream.collect(Collectors.toList());
-
+    public List<Try<Object>> executeBindingsAndCollect(boolean allowFailure, Stream<Binding<Object>> bindings, String methodName, Object[] arguments) {
+        Stream<Try<Object>> executedBindingsStream = executeBindings(allowFailure, bindings, methodName, arguments);
+        List<Try<Object>> results = executedBindingsStream.collect(Collectors.toList());
         return results;
     }
 }
