@@ -31,6 +31,12 @@ public class CompositeStorageService implements StorageService {
         return null;
     }
 
+    @Replicate(propagation = Propagation.FASTEST)
+    @Override
+    public String fastGet(int id) {
+        return null;
+    }
+
     @Replicate(propagation = Propagation.SECONDARY)
     @Override
     public void refresh(int id) {

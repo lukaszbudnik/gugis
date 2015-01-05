@@ -18,7 +18,9 @@ import org.aopalliance.intercept.MethodInvocation;
 import org.apache.commons.beanutils.MethodUtils;
 
 import javax.inject.Inject;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -55,9 +57,19 @@ public class GugisReplicatorInterceptor implements MethodInterceptor {
 
         List<Object> results;
         switch (replicate.propagation()) {
+            case FASTEST: {
+                Stream<Object> executedStream = executeBindings(bindings.stream(), i.getMethod().getName(), i.getArguments());
+                Optional<Object> result = executedStream.findAny();
+                if (!result.isPresent()) {
+                    log.error("Fastest implementation did not return any value");
+                    throw new GugisException("Fastest implementation did not return any value");
+                }
+                results = Arrays.asList(result.get());
+                break;
+            }
             case PRIMARY: {
                 Stream<Binding<Object>> filtered = bindings.stream().filter(b -> b.getProvider().get().getClass().isAnnotationPresent(Primary.class));
-                results = executeBindings(filtered, i.getMethod().getName(), i.getArguments());
+                results = executeBindingsAndCollect(filtered, i.getMethod().getName(), i.getArguments());
                 if (results.size() == 0) {
                     log.error("No results for primary implementation found for " + clazz);
                     throw new GugisException("No primary implementation found for " + clazz);
@@ -66,7 +78,7 @@ public class GugisReplicatorInterceptor implements MethodInterceptor {
             }
             case SECONDARY: {
                 Stream<Binding<Object>> filtered = bindings.stream().filter(b -> b.getProvider().get().getClass().isAnnotationPresent(Secondary.class));
-                results = executeBindings(filtered, i.getMethod().getName(), i.getArguments());
+                results = executeBindingsAndCollect(filtered, i.getMethod().getName(), i.getArguments());
                 if (results.size() == 0) {
                     log.error("No results for secondary implementation found for " + clazz);
                     throw new GugisException("No secondary implementation found for " + clazz);
@@ -81,7 +93,7 @@ public class GugisReplicatorInterceptor implements MethodInterceptor {
                 } else {
                     bindingStream = bindings.stream();
                 }
-                results = executeBindings(bindingStream, i.getMethod().getName(), i.getArguments());
+                results = executeBindingsAndCollect(bindingStream, i.getMethod().getName(), i.getArguments());
 
                 if (results.size() == 0) {
                     log.error("None of the bindings returned value for " + clazz);
@@ -102,15 +114,23 @@ public class GugisReplicatorInterceptor implements MethodInterceptor {
         return object;
     }
 
-    public List<Object> executeBindings(Stream<Binding<Object>> bindings, String methodName, Object[] arguments) {
-        List<Object> results = bindings.parallel().map(binding -> {
+    public Stream<Object> executeBindings(Stream<Binding<Object>> bindings, String methodName, Object[] arguments) {
+        Stream<Object> executedBindingsStream = bindings.parallel().map(binding -> {
             try {
                 Object component = binding.getProvider().get();
                 return MethodUtils.invokeMethod(component, methodName, arguments);
             } catch (Exception e) {
                 throw new GugisException(e);
             }
-        }).collect(Collectors.toList());
+        });
+        return executedBindingsStream;
+    }
+
+    public List<Object> executeBindingsAndCollect(Stream<Binding<Object>> bindings, String methodName, Object[] arguments) {
+        Stream<Object> executedBindingsStream = executeBindings(bindings, methodName, arguments);
+
+        List<Object> results = executedBindingsStream.collect(Collectors.toList());
+
         return results;
     }
 }

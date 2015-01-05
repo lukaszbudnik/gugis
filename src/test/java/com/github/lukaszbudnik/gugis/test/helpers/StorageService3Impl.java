@@ -9,43 +9,43 @@
  */
 package com.github.lukaszbudnik.gugis.test.helpers;
 
-import com.github.lukaszbudnik.gugis.Secondary;
+import com.github.lukaszbudnik.gugis.Primary;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Singleton;
 
-@Secondary
+@Primary
 @Singleton
 @Slf4j
-public class StorageService1Impl extends AbstractTestService implements StorageService {
+public class StorageService3Impl extends AbstractTestService implements StorageService {
 
     @Override
     public int put(String item) {
         log.trace(this.getClass().getSimpleName() + ".put = " + item);
         try {
-            Thread.sleep(5000);
+            Thread.sleep(1000);
         } catch (InterruptedException e) {
         }
         called();
-        return 1;
+        return 3;
     }
 
     @Override
     public String get(int id) {
         called();
         log.trace(this.getClass().getSimpleName() + ".get = " + id);
-        return "null 1";
+        return "null 3";
     }
 
     @Override
     public String fastGet(int id) {
         log.trace(this.getClass().getSimpleName() + ".fastGet = " + id);
         try {
-            Thread.sleep(1000);
+            Thread.sleep(500);
         } catch (InterruptedException e) {
         }
         called();
-        return "null 1";
+        return "null 3 - the fastest";
     }
 
     @Override
