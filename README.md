@@ -24,6 +24,12 @@ How Gugis knows what method calls should be routed to what component(s)? Each me
 * `@Replicate(propagation = Propagation.SECONDARY)` - method call will be routed to all secondaries
 * `@Replicate(propagation = Propagation.ANY)` - method call will be routed to the very first binding found by Guice, either primary or secondary
 
+## Error handling
+
+Gugis is using Guice interceptor and all caught exceptions are wrapped with `GugisException` (runtime exception) which in turn wraps `InvocationTargetException` (thrown by Java reflection API). As `GugisException` is a runtime exception it needs to be explicitly added to `try/catch` block.
+
+By default Gugis fails when any matching implementation throws an exception. This default behaviour can be changed. Gugis can be configured to complete a composite call even when some of matching implementations throw exceptions. However there must be at least one call that succeeds. This can be done by setting `@Replicate`'s parameter `allowFailure` to `true`. See `src/test/java` for more details.
+
 ## Setup
 
 When creating an injector using `Guice.createInjector()` we need to tell Guice to use `GugisModule.`

@@ -10,10 +10,7 @@
 package com.github.lukaszbudnik.gugis.test;
 
 import com.github.lukaszbudnik.gugis.GugisModule;
-import com.github.lukaszbudnik.gugis.test.helpers.CompositeStorageService;
-import com.github.lukaszbudnik.gugis.test.helpers.StorageService;
-import com.github.lukaszbudnik.gugis.test.helpers.StorageService1Impl;
-import com.github.lukaszbudnik.gugis.test.helpers.StorageService2Impl;
+import com.github.lukaszbudnik.gugis.test.helpers.*;
 import org.apache.onami.test.OnamiRunner;
 import org.apache.onami.test.annotation.GuiceModules;
 import org.junit.After;
@@ -33,74 +30,101 @@ public class BasicTest {
     private Set<StorageService> storageServices;
 
     @Inject
-    private CompositeStorageService compositeStorageService;
+    private StorageServiceComposite storageServiceComposite;
 
     @Inject
     private StorageService1Impl secondary;
 
     @Inject
-    private StorageService2Impl primary;
+    private StorageService2Impl primary1;
+
+    @Inject
+    private StorageService3Impl primary2;
 
     @After
     @Before
     public void reset() {
-        primary.reset();
+        primary1.reset();
+        primary2.reset();
         secondary.reset();
     }
 
     @Test
     public void shouldInjectAllImplementations() {
-        Assert.assertEquals(2, storageServices.size());
+        Assert.assertEquals(3, storageServices.size());
     }
 
     @Test
     public void shouldInjectCompositeService() {
-        Assert.assertNotNull(compositeStorageService);
+        Assert.assertNotNull(storageServiceComposite);
     }
 
     @Test
     public void shouldPropagateToAll() {
-        Assert.assertFalse(primary.wasCalled());
+        Assert.assertFalse(primary1.wasCalled());
+        Assert.assertFalse(primary2.wasCalled());
         Assert.assertFalse(secondary.wasCalled());
 
-        compositeStorageService.put("test");
+        storageServiceComposite.put("test");
 
-        Assert.assertTrue(primary.wasCalled());
+        Assert.assertTrue(primary1.wasCalled());
+        Assert.assertTrue(primary2.wasCalled());
         Assert.assertTrue(secondary.wasCalled());
     }
 
     @Test
     public void shouldPropagateToAny() {
-        Assert.assertFalse(primary.wasCalled());
+        Assert.assertFalse(primary1.wasCalled());
+        Assert.assertFalse(primary2.wasCalled());
         Assert.assertFalse(secondary.wasCalled());
 
-        compositeStorageService.get(0);
+        storageServiceComposite.get(0);
 
-        Assert.assertTrue(primary.wasCalled() | secondary.wasCalled());
-        Assert.assertFalse(primary.wasCalled() & secondary.wasCalled());
+        Assert.assertTrue(primary1.wasCalled() | primary2.wasCalled() | secondary.wasCalled());
+        Assert.assertFalse(primary1.wasCalled() & primary2.wasCalled() & secondary.wasCalled());
     }
 
     @Test
     public void shouldPropagateToPrimary() {
-        Assert.assertFalse(primary.wasCalled());
+        Assert.assertFalse(primary1.wasCalled());
+        Assert.assertFalse(primary2.wasCalled());
         Assert.assertFalse(secondary.wasCalled());
 
-        compositeStorageService.delete(0);
+        storageServiceComposite.delete(0);
 
-        Assert.assertTrue(primary.wasCalled());
+        Assert.assertTrue(primary1.wasCalled());
+        Assert.assertTrue(primary2.wasCalled());
         Assert.assertFalse(secondary.wasCalled());
     }
 
     @Test
     public void shouldPropagateToSecondary() {
-        Assert.assertFalse(primary.wasCalled());
+        Assert.assertFalse(primary1.wasCalled());
+        Assert.assertFalse(primary2.wasCalled());
         Assert.assertFalse(secondary.wasCalled());
 
-        compositeStorageService.refresh(0);
+        storageServiceComposite.refresh(0);
 
-        Assert.assertFalse(primary.wasCalled());
+        Assert.assertFalse(primary1.wasCalled());
+        Assert.assertFalse(primary2.wasCalled());
         Assert.assertTrue(secondary.wasCalled());
     }
 
-}
+    @Test
+    public void shouldPropagateToFastest() {
+        Assert.assertFalse(primary1.wasCalled());
+        Assert.assertFalse(primary2.wasCalled());
+        Assert.assertFalse(secondary.wasCalled());
 
+        String result = storageServiceComposite.fastGet(0);
+
+        // all components were called
+        Assert.assertTrue(primary1.wasCalled());
+        Assert.assertTrue(secondary.wasCalled());
+        Assert.assertTrue(primary2.wasCalled());
+
+        // the fastest is StorageService3Impl
+        Assert.assertEquals("null 3 - the fastest", result);
+    }
+
+}

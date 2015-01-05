@@ -7,37 +7,33 @@
  *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
-package com.github.lukaszbudnik.gugis.test.helpers;
+package com.github.lukaszbudnik.gugis;
 
-import com.github.lukaszbudnik.gugis.Composite;
-import com.github.lukaszbudnik.gugis.Propagation;
-import com.github.lukaszbudnik.gugis.Replicate;
+public class Failure<T> implements Try<T> {
 
-import javax.inject.Singleton;
+    private Throwable failure;
 
-@Composite
-@Singleton
-public class CompositeStorageService implements StorageService {
-
-    @Replicate(propagation = Propagation.ALL)
-    @Override
-    public int put(String item) {
-        return 0;
+    public Failure(Throwable failure) {
+        this.failure = failure;
     }
 
-    @Replicate(propagation = Propagation.ANY)
     @Override
-    public String get(int id) {
-        return null;
+    public boolean isFailure() {
+        return true;
     }
 
-    @Replicate(propagation = Propagation.SECONDARY)
     @Override
-    public void refresh(int id) {
+    public boolean isSuccess() {
+        return false;
     }
 
-    @Replicate(propagation = Propagation.PRIMARY)
     @Override
-    public void delete(int id) {
+    public T get() {
+        throw new IllegalStateException("Success does not have failure");
+    }
+
+    @Override
+    public Throwable failure() {
+        return failure;
     }
 }

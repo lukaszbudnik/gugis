@@ -9,18 +9,33 @@
  */
 package com.github.lukaszbudnik.gugis.test.helpers;
 
-public interface StorageService {
+import com.github.lukaszbudnik.gugis.Primary;
+import lombok.extern.slf4j.Slf4j;
 
-    int put(String item);
+import javax.inject.Singleton;
 
-    String get(int id);
+@Slf4j
+@Singleton
+@Primary
+public class QueueService1Impl extends AbstractTestService implements QueueService {
 
-    default String fastGet(int id) {
-        return get(id);
+    @Override
+    public void publish(String item) {
+        log.trace("publish = " + item);
+        called();
     }
 
-    void refresh(int id);
+    @Override
+    public String consume() {
+        log.trace("consume");
+        called();
+        return "consumed 1";
+    }
 
-    void delete(int id);
-
+    @Override
+    public void delete(String item) {
+        log.trace("delete " + item);
+        called();
+        throw new RuntimeException(this.getClass().getCanonicalName());
+    }
 }

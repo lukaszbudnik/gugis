@@ -9,14 +9,31 @@
  */
 package com.github.lukaszbudnik.gugis;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+public class Success<T> implements Try<T> {
 
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
-public @interface Replicate {
-    Propagation propagation() default Propagation.ALL;
-    boolean allowFailure() default false;
+    private final T result;
+
+    public Success(T result) {
+        this.result = result;
+    }
+
+    @Override
+    public boolean isFailure() {
+        return false;
+    }
+
+    @Override
+    public boolean isSuccess() {
+        return true;
+    }
+
+    @Override
+    public T get() {
+        return result;
+    }
+
+    @Override
+    public Exception failure() {
+        throw new IllegalStateException("Success does not have failure");
+    }
 }

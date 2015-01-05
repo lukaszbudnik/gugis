@@ -11,7 +11,7 @@ package com.github.lukaszbudnik.gugis.test;
 
 import com.github.lukaszbudnik.gugis.GugisException;
 import com.github.lukaszbudnik.gugis.GugisModule;
-import com.github.lukaszbudnik.gugis.test.helpers.CompositeNotificationService;
+import com.github.lukaszbudnik.gugis.test.helpers.NotificationServiceComposite;
 import com.github.lukaszbudnik.gugis.test.helpers.NotificationService1Impl;
 import org.apache.onami.test.OnamiRunner;
 import org.apache.onami.test.annotation.GuiceModules;
@@ -28,7 +28,7 @@ import javax.inject.Inject;
 public class DisabledAutodiscoveryTest {
 
     @Inject
-    private CompositeNotificationService compositeNotificationService;
+    private NotificationServiceComposite notificationServiceComposite;
 
     @Inject
     private NotificationService1Impl notificationService;
@@ -42,7 +42,7 @@ public class DisabledAutodiscoveryTest {
     @Test
     public void shouldInjectInstances() {
         // Guice will inject instances but replication will not work
-        Assert.assertNotNull(compositeNotificationService);
+        Assert.assertNotNull(notificationServiceComposite);
         Assert.assertNotNull(notificationService);
     }
 
@@ -50,6 +50,6 @@ public class DisabledAutodiscoveryTest {
     public void shouldNotReplicateWhenAutodiscoverSetToFalse() {
         Assert.assertFalse(notificationService.wasCalled());
 
-        compositeNotificationService.sendNotification("to");
+        notificationServiceComposite.sendNotification("to");
     }
 }
