@@ -128,9 +128,4 @@ public class GugisReplicatorInterceptor implements MethodInterceptor {
         return executedBindingsStream;
     }
 
-    public List<Try<Object>> executeBindingsAndCollect(boolean allowFailure, Stream<Binding<Object>> bindings, String methodName, Object[] arguments) {
-        Stream<Try<Object>> executedBindingsStream = executeBindings(allowFailure, bindings, methodName, arguments);
-        List<Try<Object>> results = executedBindingsStream.collect(Collectors.toList());
-        return results;
-    }
 }
