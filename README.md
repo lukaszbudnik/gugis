@@ -3,23 +3,21 @@ gugis [![Build Status](https://travis-ci.org/lukaszbudnik/gugis.svg?branch=maste
 
 Lightweight and robust framework for creating composite components using Guice.
 
-Gugis allows you to bind multiple implementation of the same interface to a composite component. When a call to composite component is being made, gugis automatically calls all found matching implementations. Gugis differentiates two types of implementations: primary and secondary. A typical use case would be disaster recovery where write operations (create, update, delete) would be routed to all implementations, some operations would be routed to only primaries, some to secondaries, etc. See usage for more information.
+Gugis automatically binds multiple implementations of the same interface to a composite component. When a call to composite component is being made Gugis automatically calls all found implementations. Gugis defines two types of implementations: primary and secondary. A typical use case would be disaster recovery where write operations (create, update, delete) would be routed to all implementations, other operations would be routed to only primaries, some to secondaries, and some operations (like read operations) may be routed to any implementation. See getting started for more information.
 
-# Usage
+# Getting started
 
-Let's assume we have a `StorageService` interface. It has two implementations `StorageService1Impl` and `StorageService2Impl`. Let's pretend that the first implementation uses Amazon S3 and the second one uses HP Blobstore. 
+Let's assume we have a `StorageService` interface. It has two implementations `StorageService1Impl` and `StorageService2Impl`. Let's pretend that the first implementation uses Amazon S3 and the second one uses HP Blobstore.
 
 ## Primary and secondary
 
-We want to differentiate between those two implementations. gugis comes with `@Primary` and `@Secondary` annotations so that we can differentiate our implementations or theirs roles.
-
-We can tell gugis to automatically replicate some operations to both primaries and secondaries, some operations to just primaries, some to just secondaries, and some literally to any implementation.
+Gugis comes with `@Primary` and `@Secondary` annotations so that we can differentiate our implementations and theirs roles. `@Primary` can be added to `StorageService2Impl` and `@Secondary` can be added to `StorageService1Impl`. Please also note that there can be multiple implementations marked with either `@Primary` or `@Secondary`.
 
 ## Composite component
 
-The last step is to create a composite component. For this we need to create another implementation of `StorageService` interface and mark it with `@Composite` annotation. This implementation can have all methods' bodies empty - those methods will never be called. Instead gugis will intercept all calls and route them to proper implementation(s).
+The last step is to create a composite component. For this we need to create another implementation of `StorageService` interface called `CompositeStorageService` and mark it with `@Composite` annotation. This implementation can have all methods' bodies empty - those methods will never be called. Instead Gugis will intercept all calls and route them to proper implementation(s).
 
-How gugis knows what method calls should be routed to what component(s)? Each method we want to be intercepted and routed needs to be marked with `@Replicate` annotation. This annotation has one parameter which can control propagation behaviour. Currently the following propagation bahaviour is supported:
+How Gugis knows what method calls should be routed to what component(s)? Each method we want to be intercepted and routed needs to be marked with `@Replicate` annotation. This annotation has one parameter which can control propagation behaviour. Currently the following propagation bahaviour is supported:
 
 * `@Replicate(propagation = Propagation.ALL)` - method call will be routed to all primaries and all secondaries
 * `@Replicate(propagation = Propagation.PRIMARY)` - method call will be routed to all primaries
@@ -28,7 +26,11 @@ How gugis knows what method calls should be routed to what component(s)? Each me
 
 ## Setup
 
-gugis automatically scans classpath for classes marked with `@Composite`. Autodiscovery can be disabled by setting annotation's autodiscovery parameter to false. See unit tests for how to disable autodiscovery and use manual discovery instead.
+When creating an injector using `Guice.createInjector()` we need to tell Guice to use `GugisModule.`
+
+Gugis automatically scans classpath for classes marked with `@Composite`. Autodiscovery can be disabled by setting annotation's `autodiscovery` parameter to `false`. See unit tests for how to disable autodiscovery and use manual discovery instead if you need more complex setup.
+
+After that all you have to do is to inject `CompositeStorageService` class using for example `@Inject` annotation or programmatically using `injector.getInstance()`.
 
 # Example
 
@@ -47,6 +49,10 @@ Use the following Maven dependency:
 ```
 
 or open [search.maven.org](http://search.maven.org/#artifactdetails|com.github.lukaszbudnik.gugis|gugis|0.3|jar) and copy and paste dependency id for your favourite dependency management tool (Gradle (gugis uses Gradle), Buildr, Ivy, sbt, Leiningen, etc).
+
+# Road map
+
+Road map can be viewed on [milestones](https://github.com/lukaszbudnik/gugis/milestones) page.
 
 # License
 
