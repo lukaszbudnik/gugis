@@ -18,18 +18,13 @@ public class Failure<T> implements Try<T> {
     }
 
     @Override
-    public boolean isFailure() {
-        return true;
-    }
-
-    @Override
     public boolean isSuccess() {
         return false;
     }
 
     @Override
     public T get() {
-        throw new IllegalStateException("Success does not have failure");
+        throw new IllegalStateException(this.getClass().getName() + " does not implement get()");
     }
 
     @Override

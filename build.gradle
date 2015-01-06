@@ -21,6 +21,10 @@ repositories {
     }
 }
 
+compileJava {
+    dependsOn clean
+}
+
 jacocoTestReport {
     dependsOn test
     reports {

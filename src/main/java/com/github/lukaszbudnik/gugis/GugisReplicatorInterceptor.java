@@ -62,11 +62,7 @@ public class GugisReplicatorInterceptor implements MethodInterceptor {
                 boolean allowFailure = false;
                 Stream<Try<Object>> executedStream = executeBindings(allowFailure, bindings.stream(), i.getMethod().getName(), i.getArguments());
                 Optional<Try<Object>> anyResult = executedStream.findAny();
-                if (!anyResult.isPresent()) {
-                    log.error("Fastest implementation did not return any value");
-                    throw new GugisException("Fastest implementation did not return any value");
-                }
-                resultStream = Stream.of(anyResult.get());
+                resultStream = anyResult.isPresent() ? Stream.of(anyResult.get()) : Stream.<Try<Object>>empty();
                 break;
             }
             case PRIMARY: {
