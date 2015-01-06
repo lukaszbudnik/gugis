@@ -1,4 +1,4 @@
-gugis [![Build Status](https://travis-ci.org/lukaszbudnik/gugis.svg?branch=master)](https://travis-ci.org/lukaszbudnik/gugis) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.lukaszbudnik.gugis/gugis/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.lukaszbudnik.gugis/gugis)
+gugis [![Build Status](https://travis-ci.org/lukaszbudnik/gugis.svg?branch=master)](https://travis-ci.org/lukaszbudnik/gugis) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.lukaszbudnik.gugis/gugis/badge.svg?style=flat)](https://maven-badges.herokuapp.com/maven-central/com.github.lukaszbudnik.gugis/gugis)
 ==============================
 
 Lightweight and robust framework for creating composite components using Guice.
