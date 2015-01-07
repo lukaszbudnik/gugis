@@ -21,6 +21,7 @@ import javax.inject.Inject;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -30,6 +31,8 @@ public class GugisReplicatorInterceptor implements MethodInterceptor {
     @Inject
     Injector injector;
 
+    private Random random = new Random();
+
     @Override
     public Object invoke(MethodInvocation i) throws Throwable {
         if (log.isDebugEnabled()) {
@@ -37,13 +40,13 @@ public class GugisReplicatorInterceptor implements MethodInterceptor {
         }
 
         Propagate propagate = i.getMethod().getDeclaredAnnotation(Propagate.class);
+        Class clazz = i.getMethod().getDeclaringClass().getInterfaces()[0];
 
         if (log.isDebugEnabled()) {
+            log.debug("About to find bindings for " + clazz);
             log.debug("Propagation set to " + propagate.propagation());
             log.debug("Allow failure set to " + propagate.allowFailure());
         }
-
-        Class clazz = i.getMethod().getDeclaringClass().getInterfaces()[0];
 
         List<Binding<Object>> bindings = injector.findBindingsByType(TypeLiteral.get(clazz));
 
@@ -76,11 +79,12 @@ public class GugisReplicatorInterceptor implements MethodInterceptor {
                 break;
             }
             default: {
-                // handles both ALL and ANY
+                // handles both ALL and RANDOM
                 Stream<Binding<Object>> bindingStream;
                 boolean allowFailure = propagate.allowFailure();
-                if (propagate.propagation() == Propagation.ANY) {
-                    bindingStream = bindings.stream().limit(1);
+                if (propagate.propagation() == Propagation.RANDOM) {
+                    int skip = random.nextInt(bindings.size());
+                    bindingStream = bindings.stream().skip(skip).limit(1);
                     allowFailure = false;
                 } else {
                     bindingStream = bindings.stream();
@@ -93,7 +97,7 @@ public class GugisReplicatorInterceptor implements MethodInterceptor {
         List<Try<Object>> successList = resultStream.filter(t -> t.isSuccess()).collect(Collectors.toList());
 
         if (successList.size() == 0) {
-            log.error("No result for " + propagate.propagation() + " implementation found for " + clazz);
+            log.error("No result for " + propagate.propagation() + " implementation found for " + clazz + "." + i.getMethod().getName());
             throw new GugisException("No result for " + propagate.propagation() + " found for " + clazz + "." + i.getMethod().getName());
         }
 

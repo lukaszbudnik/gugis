@@ -36,6 +36,10 @@ public class GugisModule extends AbstractModule {
                 continue;
             }
 
+            if (log.isDebugEnabled()) {
+                log.debug("About to bind composite component " + compositeClass);
+            }
+
             bind(compositeClass);
 
             Class classInterface = compositeClass.getInterfaces()[0];
@@ -48,6 +52,11 @@ public class GugisModule extends AbstractModule {
     private void bind(Multibinder multibinder, Class<?> classInterface, Class<? extends Annotation> annotation) {
         StreamSupport.stream(ClassIndex.getAnnotated(annotation).spliterator(), true)
                 .filter(c -> classInterface.isAssignableFrom(c))
-                .forEach(c -> multibinder.addBinding().to(c));
+                .forEach(c -> {
+                    if (log.isDebugEnabled()) {
+                        log.debug("Binding " + c + " to " + classInterface);
+                    }
+                    multibinder.addBinding().to(c);
+                });
     }
 }

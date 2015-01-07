@@ -30,6 +30,13 @@ jacocoTestReport {
     }
 }
 
+test {
+    reports {
+        junitXml.enabled = true
+        html.enabled = true
+    }
+}
+
 dependencies {
     compile 'org.apache.logging.log4j:log4j-slf4j-impl:2.1'
     compile 'org.apache.logging.log4j:log4j-core:2.1'
@@ -59,6 +66,20 @@ task sourcesJar(type: Jar) {
 task javadocJar(type: Jar) {
     classifier = 'javadoc'
     from javadoc
+}
+
+task printTestErrors {
+    def xmlReports = new File("${buildDir}/test-results")
+    if (xmlReports.exists()) {
+        xmlReports.eachFileMatch(groovy.io.FileType.FILES, ~/TEST\-.*\.xml/) {
+            def testsuite = new groovy.util.XmlParser().parse(it)
+            testsuite.testcase.findAll {
+                it.failure.size() > 0
+            }.each {
+                println it
+            }
+        }
+    }
 }
 
 artifacts {

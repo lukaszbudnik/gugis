@@ -25,7 +25,7 @@ public class StorageServiceComposite implements StorageService {
         return 0;
     }
 
-    @Propagate(propagation = Propagation.ANY)
+    @Propagate(propagation = Propagation.RANDOM)
     @Override
     public String get(int id) {
         return null;
