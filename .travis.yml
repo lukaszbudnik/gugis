@@ -9,3 +9,5 @@ before_install:
   - export GRADLE_HOME=$PWD/gradle-2.2
   - export PATH=$GRADLE_HOME/bin:$PATH
   - gradle -v
+after_failure:
+  - gradle printTestErrors

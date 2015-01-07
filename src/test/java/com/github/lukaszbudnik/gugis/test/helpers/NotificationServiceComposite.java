@@ -10,8 +10,8 @@
 package com.github.lukaszbudnik.gugis.test.helpers;
 
 import com.github.lukaszbudnik.gugis.Composite;
+import com.github.lukaszbudnik.gugis.Propagate;
 import com.github.lukaszbudnik.gugis.Propagation;
-import com.github.lukaszbudnik.gugis.Replicate;
 
 import javax.inject.Singleton;
 
@@ -19,7 +19,7 @@ import javax.inject.Singleton;
 @Singleton
 public class NotificationServiceComposite implements NotificationService {
 
-    @Replicate(propagation = Propagation.ALL)
+    @Propagate(propagation = Propagation.ALL)
     @Override
     public void sendNotification(String to) {
     }

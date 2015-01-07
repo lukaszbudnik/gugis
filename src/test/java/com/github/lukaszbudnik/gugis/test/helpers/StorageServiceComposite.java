@@ -10,8 +10,8 @@
 package com.github.lukaszbudnik.gugis.test.helpers;
 
 import com.github.lukaszbudnik.gugis.Composite;
+import com.github.lukaszbudnik.gugis.Propagate;
 import com.github.lukaszbudnik.gugis.Propagation;
-import com.github.lukaszbudnik.gugis.Replicate;
 
 import javax.inject.Singleton;
 
@@ -19,30 +19,30 @@ import javax.inject.Singleton;
 @Singleton
 public class StorageServiceComposite implements StorageService {
 
-    @Replicate(propagation = Propagation.ALL)
+    @Propagate(propagation = Propagation.ALL)
     @Override
     public int put(String item) {
         return 0;
     }
 
-    @Replicate(propagation = Propagation.ANY)
+    @Propagate(propagation = Propagation.RANDOM)
     @Override
     public String get(int id) {
         return null;
     }
 
-    @Replicate(propagation = Propagation.FASTEST)
+    @Propagate(propagation = Propagation.FASTEST)
     @Override
     public String fastGet(int id) {
         return null;
     }
 
-    @Replicate(propagation = Propagation.SECONDARY)
+    @Propagate(propagation = Propagation.SECONDARY)
     @Override
     public void refresh(int id) {
     }
 
-    @Replicate(propagation = Propagation.PRIMARY)
+    @Propagate(propagation = Propagation.PRIMARY)
     @Override
     public void delete(int id) {
     }

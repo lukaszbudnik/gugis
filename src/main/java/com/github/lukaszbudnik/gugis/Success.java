@@ -18,11 +18,6 @@ public class Success<T> implements Try<T> {
     }
 
     @Override
-    public boolean isFailure() {
-        return false;
-    }
-
-    @Override
     public boolean isSuccess() {
         return true;
     }
@@ -33,7 +28,8 @@ public class Success<T> implements Try<T> {
     }
 
     @Override
-    public Exception failure() {
-        throw new IllegalStateException("Success does not have failure");
+    public Throwable failure() {
+        throw new IllegalStateException(this.getClass().getName() + " does not implement failure()");
     }
+
 }

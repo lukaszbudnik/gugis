@@ -10,8 +10,15 @@
 package com.github.lukaszbudnik.gugis;
 
 public interface Try<T> {
-    boolean isFailure();
+
     boolean isSuccess();
+
+    default boolean isFailure() {
+        return !isSuccess();
+    }
+
     T get();
+
     Throwable failure();
+
 }

@@ -10,9 +10,9 @@
 package com.github.lukaszbudnik.gugis.test;
 
 import com.github.lukaszbudnik.gugis.GugisModule;
-import com.github.lukaszbudnik.gugis.test.helpers.NotificationServiceComposite;
 import com.github.lukaszbudnik.gugis.test.helpers.NotificationService;
 import com.github.lukaszbudnik.gugis.test.helpers.NotificationService1Impl;
+import com.github.lukaszbudnik.gugis.test.helpers.NotificationServiceComposite;
 import com.google.inject.AbstractModule;
 import com.google.inject.Module;
 import com.google.inject.multibindings.Multibinder;

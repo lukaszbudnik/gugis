@@ -21,6 +21,7 @@ import javax.inject.Inject;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -30,20 +31,22 @@ public class GugisReplicatorInterceptor implements MethodInterceptor {
     @Inject
     Injector injector;
 
+    private Random random = new Random();
+
     @Override
     public Object invoke(MethodInvocation i) throws Throwable {
         if (log.isDebugEnabled()) {
             log.debug("Method " + i.getMethod() + " is called on " + i.getThis() + " with args " + i.getArguments());
         }
 
-        Replicate replicate = i.getMethod().getDeclaredAnnotation(Replicate.class);
+        Propagate propagate = i.getMethod().getDeclaredAnnotation(Propagate.class);
+        Class clazz = i.getMethod().getDeclaringClass().getInterfaces()[0];
 
         if (log.isDebugEnabled()) {
-            log.debug("Propagation set to " + replicate.propagation());
-            log.debug("Allow failure set to " + replicate.allowFailure());
+            log.debug("About to find bindings for " + clazz);
+            log.debug("Propagation set to " + propagate.propagation());
+            log.debug("Allow failure set to " + propagate.allowFailure());
         }
-
-        Class clazz = i.getMethod().getDeclaringClass().getInterfaces()[0];
 
         List<Binding<Object>> bindings = injector.findBindingsByType(TypeLiteral.get(clazz));
 
@@ -57,34 +60,31 @@ public class GugisReplicatorInterceptor implements MethodInterceptor {
         }
 
         Stream<Try<Object>> resultStream;
-        switch (replicate.propagation()) {
+        switch (propagate.propagation()) {
             case FASTEST: {
                 boolean allowFailure = false;
                 Stream<Try<Object>> executedStream = executeBindings(allowFailure, bindings.stream(), i.getMethod().getName(), i.getArguments());
                 Optional<Try<Object>> anyResult = executedStream.findAny();
-                if (!anyResult.isPresent()) {
-                    log.error("Fastest implementation did not return any value");
-                    throw new GugisException("Fastest implementation did not return any value");
-                }
-                resultStream = Stream.of(anyResult.get());
+                resultStream = anyResult.isPresent() ? Stream.of(anyResult.get()) : Stream.<Try<Object>>empty();
                 break;
             }
             case PRIMARY: {
                 Stream<Binding<Object>> filtered = bindings.stream().filter(b -> b.getProvider().get().getClass().isAnnotationPresent(Primary.class));
-                resultStream = executeBindings(replicate.allowFailure(), filtered, i.getMethod().getName(), i.getArguments());
+                resultStream = executeBindings(propagate.allowFailure(), filtered, i.getMethod().getName(), i.getArguments());
                 break;
             }
             case SECONDARY: {
                 Stream<Binding<Object>> filtered = bindings.stream().filter(b -> b.getProvider().get().getClass().isAnnotationPresent(Secondary.class));
-                resultStream = executeBindings(replicate.allowFailure(), filtered, i.getMethod().getName(), i.getArguments());
+                resultStream = executeBindings(propagate.allowFailure(), filtered, i.getMethod().getName(), i.getArguments());
                 break;
             }
             default: {
-                // handles both ALL and ANY
+                // handles both ALL and RANDOM
                 Stream<Binding<Object>> bindingStream;
-                boolean allowFailure = replicate.allowFailure();
-                if (replicate.propagation() == Propagation.ANY) {
-                    bindingStream = bindings.stream().limit(1);
+                boolean allowFailure = propagate.allowFailure();
+                if (propagate.propagation() == Propagation.RANDOM) {
+                    int skip = random.nextInt(bindings.size());
+                    bindingStream = bindings.stream().skip(skip).limit(1);
                     allowFailure = false;
                 } else {
                     bindingStream = bindings.stream();
@@ -97,8 +97,8 @@ public class GugisReplicatorInterceptor implements MethodInterceptor {
         List<Try<Object>> successList = resultStream.filter(t -> t.isSuccess()).collect(Collectors.toList());
 
         if (successList.size() == 0) {
-            log.error("No result for " + replicate.propagation() + " implementation found for " + clazz);
-            throw new GugisException("No result for " + replicate.propagation() + " found for " + clazz + "." + i.getMethod().getName());
+            log.error("No result for " + propagate.propagation() + " implementation found for " + clazz + "." + i.getMethod().getName());
+            throw new GugisException("No result for " + propagate.propagation() + " found for " + clazz + "." + i.getMethod().getName());
         }
 
         // all implementations should be homogeneous and should return same value for same arguments
@@ -128,9 +128,4 @@ public class GugisReplicatorInterceptor implements MethodInterceptor {
         return executedBindingsStream;
     }
 
-    public List<Try<Object>> executeBindingsAndCollect(boolean allowFailure, Stream<Binding<Object>> bindings, String methodName, Object[] arguments) {
-        Stream<Try<Object>> executedBindingsStream = executeBindings(allowFailure, bindings, methodName, arguments);
-        List<Try<Object>> results = executedBindingsStream.collect(Collectors.toList());
-        return results;
-    }
 }
