@@ -17,12 +17,21 @@ Gugis comes with `@Primary` and `@Secondary` annotations so that we can differen
 
 The last step is to create a composite component. For this we need to create another implementation of `StorageService` interface called `CompositeStorageService` and mark it with `@Composite` annotation. This implementation can have all methods' bodies empty - those methods will never be called. Instead Gugis will intercept all calls and route them to proper implementation(s).
 
-How Gugis knows what method calls should be routed to what component(s)? Each method we want to be intercepted and routed needs to be marked with `@Replicate` annotation. This annotation has one parameter which can control propagation behaviour. Currently the following propagation bahaviour is supported:
+How Gugis knows what method calls should be routed to what component(s)? Each method we want to be intercepted and routed needs to be marked with `@Propagate` annotation. This annotation has one parameter which can control propagation behaviour. Currently the following propagation bahaviour is supported:
 
-* `@Replicate(propagation = Propagation.ALL)` - method call will be routed to all primaries and all secondaries
-* `@Replicate(propagation = Propagation.PRIMARY)` - method call will be routed to all primaries
-* `@Replicate(propagation = Propagation.SECONDARY)` - method call will be routed to all secondaries
-* `@Replicate(propagation = Propagation.ANY)` - method call will be routed to the very first binding found by Guice, either primary or secondary
+* `@Propagate(propagation = Propagation.ALL)` - method call will be routed to all primaries and all secondaries
+* `@Propagate(propagation = Propagation.PRIMARY)` - method call will be routed to all primaries
+* `@Propagate(propagation = Propagation.SECONDARY)` - method call will be routed to all secondaries
+* `@Propagate(propagation = Propagation.FASTEST)` - method call will be routed to all implementations (just like in `ALL`), but the processing will finish as soon as first implementation finishes
+* `@Propagate(propagation = Propagation.RANDOM)` - method call will be routed to random implementation, either primary or secondary
+
+## Error handling
+
+Gugis is using Guice interceptor and all caught exceptions are wrapped with `GugisException` (runtime exception) which in turn wraps `InvocationTargetException` (thrown by Java reflection API). As `GugisException` is a runtime exception it needs to be explicitly added to `try/catch` block.
+
+By default Gugis fails when any matching implementation throws an exception. This default behaviour can be changed. Gugis can be configured to complete a composite call even when some of matching implementations throw exceptions. However there must be at least one call that succeeds. This can be done by setting `@Propagate`'s parameter `allowFailure` to `true`. See `src/test/java` for more details.
+
+Note: `Propagation.FASTEST` and `Propagation.RANDOM` return just one call. `allowFailure` is ignored. Gugis will fail if called implementation will throw exception. Please also note that this behaviour will be addressed in Gugis 0.5.
 
 ## Setup
 
@@ -32,7 +41,7 @@ Gugis automatically scans classpath for classes marked with `@Composite`. Autodi
 
 After that all you have to do is to inject `CompositeStorageService` class using for example `@Inject` annotation or programmatically using `injector.getInstance()`.
 
-# Example
+# Examples
 
 See `src/test/java` for lots of unit tests and examples.
 
@@ -44,11 +53,11 @@ Use the following Maven dependency:
 <dependency>
   <groupId>com.github.lukaszbudnik.gugis</groupId>
   <artifactId>gugis</artifactId>
-  <version>0.3</version>
+  <version>0.4</version>
 </dependency>
 ```
 
-or open [search.maven.org](http://search.maven.org/#artifactdetails|com.github.lukaszbudnik.gugis|gugis|0.3|jar) and copy and paste dependency id for your favourite dependency management tool (Gradle (gugis uses Gradle), Buildr, Ivy, sbt, Leiningen, etc).
+or open [search.maven.org](http://search.maven.org/#artifactdetails|com.github.lukaszbudnik.gugis|gugis|0.4|jar) and copy and paste dependency id for your favourite dependency management tool (Gradle (gugis uses Gradle), Buildr, Ivy, sbt, Leiningen, etc).
 
 # Road map
 

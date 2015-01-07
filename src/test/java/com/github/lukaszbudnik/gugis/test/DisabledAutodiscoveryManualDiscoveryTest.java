@@ -10,9 +10,9 @@
 package com.github.lukaszbudnik.gugis.test;
 
 import com.github.lukaszbudnik.gugis.GugisModule;
-import com.github.lukaszbudnik.gugis.test.helpers.CompositeNotificationService;
 import com.github.lukaszbudnik.gugis.test.helpers.NotificationService;
 import com.github.lukaszbudnik.gugis.test.helpers.NotificationService1Impl;
+import com.github.lukaszbudnik.gugis.test.helpers.NotificationServiceComposite;
 import com.google.inject.AbstractModule;
 import com.google.inject.Module;
 import com.google.inject.multibindings.Multibinder;
@@ -30,7 +30,7 @@ import javax.inject.Inject;
 public class DisabledAutodiscoveryManualDiscoveryTest {
 
     @Inject
-    private CompositeNotificationService compositeNotificationService;
+    private NotificationServiceComposite notificationServiceComposite;
 
     @Inject
     private NotificationService1Impl notificationService;
@@ -41,7 +41,7 @@ public class DisabledAutodiscoveryManualDiscoveryTest {
                 new AbstractModule() {
                     @Override
                     protected void configure() {
-                        bind(CompositeNotificationService.class);
+                        bind(NotificationServiceComposite.class);
 
                         Multibinder<NotificationService> binder = Multibinder.newSetBinder(binder(), NotificationService.class);
                         binder.addBinding().to(NotificationService1Impl.class);
@@ -59,17 +59,17 @@ public class DisabledAutodiscoveryManualDiscoveryTest {
 
     @Test
     public void shouldInjectInstances() {
-        Assert.assertNotNull(compositeNotificationService);
+        Assert.assertNotNull(notificationServiceComposite);
         // composite instance is enhanced by Guice
-        Assert.assertNotEquals(CompositeNotificationService.class, compositeNotificationService.getClass());
-        Assert.assertTrue(compositeNotificationService instanceof CompositeNotificationService);
+        Assert.assertNotEquals(NotificationServiceComposite.class, notificationServiceComposite.getClass());
+        Assert.assertTrue(notificationServiceComposite instanceof NotificationServiceComposite);
     }
 
     @Test
     public void shouldReplicateWhenAutodiscoverSetToFalseManualDiscoveryUsedAnd() {
         Assert.assertFalse(notificationService.wasCalled());
 
-        compositeNotificationService.sendNotification("to");
+        notificationServiceComposite.sendNotification("to");
 
         Assert.assertTrue(notificationService.wasCalled());
     }

@@ -7,16 +7,29 @@
  *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
-package com.github.lukaszbudnik.gugis;
+package com.github.lukaszbudnik.gugis.test.helpers;
 
-public class GugisException extends RuntimeException {
+import com.github.lukaszbudnik.gugis.Composite;
+import com.github.lukaszbudnik.gugis.Propagate;
+import lombok.extern.slf4j.Slf4j;
 
-    public GugisException(String message) {
-        super(message);
+@Slf4j
+@Composite
+public class QueueServiceComposite implements QueueService {
+
+    @Propagate
+    @Override
+    public void publish(String item) {
     }
 
-    public GugisException(Throwable cause) {
-        super(cause);
+    @Propagate(allowFailure = true)
+    @Override
+    public String consume() {
+        return null;
     }
 
+    @Propagate(allowFailure = true)
+    @Override
+    public void delete(String item) {
+    }
 }

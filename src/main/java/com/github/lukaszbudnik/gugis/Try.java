@@ -9,14 +9,16 @@
  */
 package com.github.lukaszbudnik.gugis;
 
-public class GugisException extends RuntimeException {
+public interface Try<T> {
 
-    public GugisException(String message) {
-        super(message);
+    boolean isSuccess();
+
+    default boolean isFailure() {
+        return !isSuccess();
     }
 
-    public GugisException(Throwable cause) {
-        super(cause);
-    }
+    T get();
+
+    Throwable failure();
 
 }

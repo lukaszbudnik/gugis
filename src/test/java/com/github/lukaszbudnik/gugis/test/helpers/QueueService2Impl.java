@@ -9,18 +9,34 @@
  */
 package com.github.lukaszbudnik.gugis.test.helpers;
 
-import com.github.lukaszbudnik.gugis.Composite;
-import com.github.lukaszbudnik.gugis.Propagation;
-import com.github.lukaszbudnik.gugis.Replicate;
+import com.github.lukaszbudnik.gugis.Primary;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Singleton;
 
-@Composite(autodiscover = false)
+@Slf4j
 @Singleton
-public class CompositeNotificationService implements NotificationService {
+@Primary
+public class QueueService2Impl extends AbstractTestService implements QueueService {
 
-    @Replicate(propagation = Propagation.ALL)
     @Override
-    public void sendNotification(String to) {
+    public void publish(String item) {
+        log.trace("publish = " + item);
+        called();
+        throw new RuntimeException(this.getClass().getCanonicalName());
+    }
+
+    @Override
+    public String consume() {
+        log.trace("consume");
+        called();
+        throw new RuntimeException(this.getClass().getCanonicalName());
+    }
+
+    @Override
+    public void delete(String item) {
+        log.trace("delete " + item);
+        called();
+        throw new RuntimeException(this.getClass().getCanonicalName());
     }
 }

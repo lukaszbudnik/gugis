@@ -9,13 +9,26 @@
  */
 package com.github.lukaszbudnik.gugis;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+public class Failure<T> implements Try<T> {
 
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
-public @interface Replicate {
-    Propagation propagation() default Propagation.ALL;
+    private Throwable failure;
+
+    public Failure(Throwable failure) {
+        this.failure = failure;
+    }
+
+    @Override
+    public boolean isSuccess() {
+        return false;
+    }
+
+    @Override
+    public T get() {
+        throw new IllegalStateException(this.getClass().getName() + " does not implement get()");
+    }
+
+    @Override
+    public Throwable failure() {
+        return failure;
+    }
 }

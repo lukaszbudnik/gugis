@@ -9,14 +9,15 @@
  */
 package com.github.lukaszbudnik.gugis;
 
-public class GugisException extends RuntimeException {
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-    public GugisException(String message) {
-        super(message);
-    }
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface Propagate {
+    Propagation propagation() default Propagation.ALL;
 
-    public GugisException(Throwable cause) {
-        super(cause);
-    }
-
+    boolean allowFailure() default false;
 }

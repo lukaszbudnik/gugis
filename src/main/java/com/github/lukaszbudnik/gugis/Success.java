@@ -9,14 +9,27 @@
  */
 package com.github.lukaszbudnik.gugis;
 
-public class GugisException extends RuntimeException {
+public class Success<T> implements Try<T> {
 
-    public GugisException(String message) {
-        super(message);
+    private final T result;
+
+    public Success(T result) {
+        this.result = result;
     }
 
-    public GugisException(Throwable cause) {
-        super(cause);
+    @Override
+    public boolean isSuccess() {
+        return true;
+    }
+
+    @Override
+    public T get() {
+        return result;
+    }
+
+    @Override
+    public Throwable failure() {
+        throw new IllegalStateException(this.getClass().getName() + " does not implement failure()");
     }
 
 }

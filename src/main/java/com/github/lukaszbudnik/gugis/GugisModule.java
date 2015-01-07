@@ -25,7 +25,7 @@ public class GugisModule extends AbstractModule {
     protected void configure() {
         GugisReplicatorInterceptor gugisReplicatorInterceptor = new GugisReplicatorInterceptor();
         requestInjection(gugisReplicatorInterceptor);
-        bindInterceptor(Matchers.any(), Matchers.annotatedWith(Replicate.class), gugisReplicatorInterceptor);
+        bindInterceptor(Matchers.any(), Matchers.annotatedWith(Propagate.class), gugisReplicatorInterceptor);
 
         for (Class<?> compositeClass : ClassIndex.getAnnotated(Composite.class)) {
             Composite compositeAnnotation = compositeClass.getAnnotation(Composite.class);
@@ -34,6 +34,10 @@ public class GugisModule extends AbstractModule {
                     log.debug("Composite class " + compositeClass.getCanonicalName() + " has autodiscover flag set to false. Skipping.");
                 }
                 continue;
+            }
+
+            if (log.isDebugEnabled()) {
+                log.debug("About to bind composite component " + compositeClass);
             }
 
             bind(compositeClass);
@@ -48,6 +52,11 @@ public class GugisModule extends AbstractModule {
     private void bind(Multibinder multibinder, Class<?> classInterface, Class<? extends Annotation> annotation) {
         StreamSupport.stream(ClassIndex.getAnnotated(annotation).spliterator(), true)
                 .filter(c -> classInterface.isAssignableFrom(c))
-                .forEach(c -> multibinder.addBinding().to(c));
+                .forEach(c -> {
+                    if (log.isDebugEnabled()) {
+                        log.debug("Binding " + c + " to " + classInterface);
+                    }
+                    multibinder.addBinding().to(c);
+                });
     }
 }
