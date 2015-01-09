@@ -9,7 +9,7 @@
  */
 package com.github.lukaszbudnik.gugis.test;
 
-import com.github.lukaszbudnik.gugis.GugisModule;
+import com.github.lukaszbudnik.gugis.NonValidatingGugisModule;
 import com.github.lukaszbudnik.gugis.test.helpers.NotificationService;
 import com.github.lukaszbudnik.gugis.test.helpers.NotificationService1Impl;
 import com.github.lukaszbudnik.gugis.test.helpers.NotificationServiceComposite;
@@ -47,7 +47,7 @@ public class DisabledAutodiscoveryManualDiscoveryTest {
                         binder.addBinding().to(NotificationService1Impl.class);
                     }
                 },
-                new GugisModule()
+                new NonValidatingGugisModule()
         };
     }
 

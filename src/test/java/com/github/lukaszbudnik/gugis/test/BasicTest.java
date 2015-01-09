@@ -9,7 +9,7 @@
  */
 package com.github.lukaszbudnik.gugis.test;
 
-import com.github.lukaszbudnik.gugis.GugisModule;
+import com.github.lukaszbudnik.gugis.NonValidatingGugisModule;
 import com.github.lukaszbudnik.gugis.test.helpers.*;
 import org.apache.onami.test.OnamiRunner;
 import org.apache.onami.test.annotation.GuiceModules;
@@ -23,7 +23,7 @@ import javax.inject.Inject;
 import java.util.Set;
 
 @RunWith(OnamiRunner.class)
-@GuiceModules(GugisModule.class)
+@GuiceModules(NonValidatingGugisModule.class)
 public class BasicTest {
 
     @Inject
