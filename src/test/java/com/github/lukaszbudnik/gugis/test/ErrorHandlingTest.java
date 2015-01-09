@@ -10,7 +10,7 @@
 package com.github.lukaszbudnik.gugis.test;
 
 import com.github.lukaszbudnik.gugis.GugisException;
-import com.github.lukaszbudnik.gugis.GugisModule;
+import com.github.lukaszbudnik.gugis.NonValidatingGugisModule;
 import com.github.lukaszbudnik.gugis.test.helpers.QueueService;
 import com.github.lukaszbudnik.gugis.test.helpers.QueueService1Impl;
 import com.github.lukaszbudnik.gugis.test.helpers.QueueService2Impl;
@@ -27,7 +27,7 @@ import javax.inject.Inject;
 import java.util.Set;
 
 @RunWith(OnamiRunner.class)
-@GuiceModules(GugisModule.class)
+@GuiceModules(NonValidatingGugisModule.class)
 public class ErrorHandlingTest {
 
     @Inject

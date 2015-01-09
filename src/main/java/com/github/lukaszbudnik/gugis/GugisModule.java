@@ -17,15 +17,32 @@ import lombok.extern.slf4j.Slf4j;
 import org.atteo.classindex.ClassIndex;
 
 import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 @Slf4j
 public class GugisModule extends AbstractModule {
+
+    private final boolean validating;
+
+    public GugisModule() {
+        this(true);
+    }
+
+    public GugisModule(boolean validating) {
+        this.validating = validating;
+    }
+
     @Override
     protected void configure() {
         GugisReplicatorInterceptor gugisReplicatorInterceptor = new GugisReplicatorInterceptor();
         requestInjection(gugisReplicatorInterceptor);
         bindInterceptor(Matchers.any(), Matchers.annotatedWith(Propagate.class), gugisReplicatorInterceptor);
+
+        List<String> validationErrors = new ArrayList<String>();
 
         for (Class<?> compositeClass : ClassIndex.getAnnotated(Composite.class)) {
             Composite compositeAnnotation = compositeClass.getAnnotation(Composite.class);
@@ -44,19 +61,64 @@ public class GugisModule extends AbstractModule {
 
             Class classInterface = compositeClass.getInterfaces()[0];
             Multibinder<?> multibinder = Multibinder.newSetBinder(binder(), classInterface);
-            bind(multibinder, classInterface, Primary.class);
-            bind(multibinder, classInterface, Secondary.class);
+            long primariesCount = bind(multibinder, classInterface, Primary.class);
+            long secondariesCount = bind(multibinder, classInterface, Secondary.class);
+
+            if (validating) {
+                if (log.isDebugEnabled()) {
+                    log.debug("About to validate bindings for " + compositeClass);
+                }
+                if (primariesCount == 0 && secondariesCount == 0) {
+                    log.error("No implementations found for " + compositeClass);
+                    validationErrors.add("No implementations found for " + compositeClass);
+                } else if (primariesCount == 0) {
+                    List<String> methodsMarkedPrimary = getMethodsMarkedWithPropagation(compositeClass, Propagation.PRIMARY);
+                    if (methodsMarkedPrimary.size() > 0) {
+                        log.error("Composite component " + compositeClass + " methods " + methodsMarkedPrimary + " marked with @Propagate(propagation = Propagation.PRIMARY) but no primary implementations found");
+                        validationErrors.add("Composite component " + compositeClass + " methods " + methodsMarkedPrimary + " marked with @Propagate(propagation = Propagation.PRIMARY) but no primary implementations found");
+                    }
+                } else if (secondariesCount == 0) {
+                    List<String> methodsMarkedSecondary = getMethodsMarkedWithPropagation(compositeClass, Propagation.SECONDARY);
+                    if (methodsMarkedSecondary.size() > 0) {
+                        log.error("Composite component " + compositeClass + " methods " + methodsMarkedSecondary + " marked with @Propagate(propagation = Propagation.SECONDARY) but no secondary implementations found");
+                        validationErrors.add("Composite component " + compositeClass + " methods " + methodsMarkedSecondary + " marked with @Propagate(propagation = Propagation.SECONDARY) but no secondary implementations found");
+                    }
+                }
+            }
         }
+
+        if (validationErrors.size() > 0) {
+            throw new GugisCreationException(validationErrors);
+        }
+
     }
 
-    private void bind(Multibinder multibinder, Class<?> classInterface, Class<? extends Annotation> annotation) {
-        StreamSupport.stream(ClassIndex.getAnnotated(annotation).spliterator(), true)
+    private List<String> getMethodsMarkedWithPropagation(Class<?> compositeClass, Propagation propagation) {
+        return Stream.of(compositeClass.getMethods())
+                .filter(m -> {
+                    Propagate propagate = m.getAnnotation(Propagate.class);
+                    if (propagate == null) {
+                        return false;
+                    }
+                    if (propagate.propagation() == propagation) {
+                        return true;
+                    }
+                    return false;
+                })
+                .map(m -> m.toString().replace(compositeClass.getCanonicalName() + ".", ""))
+                .collect(Collectors.toList());
+    }
+
+    private long bind(Multibinder multibinder, Class<?> classInterface, Class<? extends Annotation> annotation) {
+        return StreamSupport.stream(ClassIndex.getAnnotated(annotation).spliterator(), true)
                 .filter(c -> classInterface.isAssignableFrom(c))
-                .forEach(c -> {
+                .map(c -> {
                     if (log.isDebugEnabled()) {
                         log.debug("Binding " + c + " to " + classInterface);
                     }
                     multibinder.addBinding().to(c);
-                });
+                    return true;
+                })
+                .count();
     }
 }
