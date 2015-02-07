@@ -112,7 +112,7 @@ public class ErrorHandlingTest {
     }
 
     @Test
-    public void shouldSelectAlwaysPrimaryAsSecondaryThrowsException() {
+    public void shouldSelectAlwaysFirstImplAsSecondThrowsException() {
         Assert.assertFalse(primary1.wasCalled());
         Assert.assertFalse(primary2.wasCalled());
 
@@ -123,10 +123,16 @@ public class ErrorHandlingTest {
         for (int i = 0; i < 100; i++) {
             String result = queueServiceComposite.permissions();
 
-            Assert.assertTrue(primary1.wasCalled());
+            // primary1 throws exception and doesn't call called()
+            Assert.assertFalse(primary1.wasCalled());
+            // primary2 is executed fine
             Assert.assertTrue(primary2.wasCalled());
 
+            // result is taken from primary2
             Assert.assertEquals("usera:write;userb:read", result);
+
+            // reset test services
+            reset();
         }
     }
 

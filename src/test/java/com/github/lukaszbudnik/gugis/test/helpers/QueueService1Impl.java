@@ -53,7 +53,6 @@ public class QueueService1Impl extends AbstractTestService implements QueueServi
     @Override
     public String permissions() {
         log.trace("permissions");
-        called();
         throw new RuntimeException(this.getClass().getCanonicalName());
     }
 }
