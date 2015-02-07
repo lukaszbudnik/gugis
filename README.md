@@ -31,8 +31,6 @@ Gugis is using Guice interceptor and all caught exceptions are wrapped with `Gug
 
 By default Gugis fails when any matching implementation throws an exception. This default behaviour can be changed. Gugis can be configured to complete a composite call even when some of matching implementations throw exceptions. However there must be at least one call that succeeds. This can be done by setting `@Propagate`'s parameter `allowFailure` to `true`. See `src/test/java` for more details.
 
-Note: `Propagation.FASTEST` and `Propagation.RANDOM` return just one call. `allowFailure` is ignored. Gugis will fail if called implementation will throw exception. Please also note that this behaviour will be addressed in Gugis 0.5.
-
 ## Setup
 
 When creating an injector using `Guice.createInjector()` we need to tell Guice to use `GugisModule.`
@@ -53,11 +51,11 @@ Use the following Maven dependency:
 <dependency>
   <groupId>com.github.lukaszbudnik.gugis</groupId>
   <artifactId>gugis</artifactId>
-  <version>0.4</version>
+  <version>0.5</version>
 </dependency>
 ```
 
-or open [search.maven.org](http://search.maven.org/#artifactdetails|com.github.lukaszbudnik.gugis|gugis|0.4|jar) and copy and paste dependency id for your favourite dependency management tool (Gradle (gugis uses Gradle), Buildr, Ivy, sbt, Leiningen, etc).
+or open [search.maven.org](http://search.maven.org/#artifactdetails|com.github.lukaszbudnik.gugis|gugis|0.5|jar) and copy and paste dependency id for your favourite dependency management tool (Gradle (gugis uses Gradle), Buildr, Ivy, sbt, Leiningen, etc).
 
 # Road map
 
