@@ -17,4 +17,8 @@ public interface QueueService {
 
     void delete(String item);
 
+    int stats();
+
+    String permissions();
+
 }

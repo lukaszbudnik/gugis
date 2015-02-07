@@ -11,6 +11,7 @@ package com.github.lukaszbudnik.gugis.test.helpers;
 
 import com.github.lukaszbudnik.gugis.Composite;
 import com.github.lukaszbudnik.gugis.Propagate;
+import com.github.lukaszbudnik.gugis.Propagation;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -31,5 +32,17 @@ public class QueueServiceComposite implements QueueService {
     @Propagate(allowFailure = true)
     @Override
     public void delete(String item) {
+    }
+
+    @Propagate(propagation = Propagation.FASTEST, allowFailure = true)
+    @Override
+    public int stats() {
+        return 0;
+    }
+
+    @Propagate(propagation = Propagation.RANDOM, allowFailure = true)
+    @Override
+    public String permissions() {
+        return null;
     }
 }
