@@ -9,16 +9,10 @@
  */
 package com.github.lukaszbudnik.gugis.test.helpers;
 
-public interface QueueService {
+public interface ReportService {
 
-    void publish(String item);
+    int uploadReport(String report);
 
-    String consume();
-
-    void delete(String item);
-
-    int stats();
-
-    String permissions();
+    String downloadReport(int id);
 
 }

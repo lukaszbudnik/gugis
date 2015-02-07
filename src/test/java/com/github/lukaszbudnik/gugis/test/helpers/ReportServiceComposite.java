@@ -9,16 +9,26 @@
  */
 package com.github.lukaszbudnik.gugis.test.helpers;
 
-public interface QueueService {
+import com.github.lukaszbudnik.gugis.Composite;
+import com.github.lukaszbudnik.gugis.Propagate;
+import com.github.lukaszbudnik.gugis.Propagation;
 
-    void publish(String item);
+import javax.inject.Singleton;
 
-    String consume();
+@Composite
+@Singleton
+public class ReportServiceComposite implements ReportService {
 
-    void delete(String item);
+    @Propagate(propagation = Propagation.PRIMARY)
+    @Override
+    public int uploadReport(String report) {
+        return 0;
+    }
 
-    int stats();
-
-    String permissions();
+    @Propagate(propagation = Propagation.SECONDARY)
+    @Override
+    public String downloadReport(int id) {
+        return null;
+    }
 
 }

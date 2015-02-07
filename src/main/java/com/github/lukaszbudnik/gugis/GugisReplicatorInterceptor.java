@@ -19,9 +19,7 @@ import org.apache.commons.beanutils.MethodUtils;
 
 import javax.inject.Inject;
 import java.lang.reflect.InvocationTargetException;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -29,7 +27,7 @@ import java.util.stream.Stream;
 public class GugisReplicatorInterceptor implements MethodInterceptor {
 
     @Inject
-    Injector injector;
+    private Injector injector;
 
     private Random random = new Random();
 
@@ -59,12 +57,11 @@ public class GugisReplicatorInterceptor implements MethodInterceptor {
             log.debug("Found " + bindings.size() + " bindings for " + clazz);
         }
 
-        Stream<Try<Object>> resultStream;
+        Stream<Try<Object>> resultStream = Stream.empty();
         switch (propagate.propagation()) {
             case FASTEST: {
-                boolean allowFailure = false;
-                Stream<Try<Object>> executedStream = executeBindings(allowFailure, bindings.stream(), i.getMethod().getName(), i.getArguments());
-                Optional<Try<Object>> anyResult = executedStream.findAny();
+                Stream<Try<Object>> executedStream = executeBindings(propagate.allowFailure(), bindings.stream(), i.getMethod().getName(), i.getArguments());
+                Optional<Try<Object>> anyResult = executedStream.filter(t -> t.isSuccess()).findAny();
                 resultStream = anyResult.isPresent() ? Stream.of(anyResult.get()) : Stream.<Try<Object>>empty();
                 break;
             }
@@ -78,18 +75,23 @@ public class GugisReplicatorInterceptor implements MethodInterceptor {
                 resultStream = executeBindings(propagate.allowFailure(), filtered, i.getMethod().getName(), i.getArguments());
                 break;
             }
-            default: {
-                // handles both ALL and RANDOM
-                Stream<Binding<Object>> bindingStream;
-                boolean allowFailure = propagate.allowFailure();
-                if (propagate.propagation() == Propagation.RANDOM) {
-                    int skip = random.nextInt(bindings.size());
-                    bindingStream = bindings.stream().skip(skip).limit(1);
-                    allowFailure = false;
-                } else {
-                    bindingStream = bindings.stream();
+            case RANDOM: {
+                ArrayList<Binding<Object>> modifiableBindings = new ArrayList<>(bindings);
+                Collections.shuffle(modifiableBindings);
+                for (Binding<Object> binding : modifiableBindings) {
+                    Stream<Try<Object>> executedStream = executeBindings(propagate.allowFailure(), Stream.of(binding), i.getMethod().getName(), i.getArguments());
+                    Optional<Try<Object>> anyResult = executedStream.filter(t -> t.isSuccess()).findFirst();
+                    if (anyResult.isPresent()) {
+                        resultStream = Stream.of(anyResult.get());
+                        break;
+                    }
                 }
-                resultStream = executeBindings(allowFailure, bindingStream, i.getMethod().getName(), i.getArguments());
+                break;
+            }
+            default: {
+                // handles ALL
+                Stream<Binding<Object>> bindingStream = bindings.stream();
+                resultStream = executeBindings(propagate.allowFailure(), bindingStream, i.getMethod().getName(), i.getArguments());
                 break;
             }
         }

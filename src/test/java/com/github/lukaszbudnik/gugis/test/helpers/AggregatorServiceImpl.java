@@ -9,16 +9,12 @@
  */
 package com.github.lukaszbudnik.gugis.test.helpers;
 
-public interface QueueService {
+import com.github.lukaszbudnik.gugis.Secondary;
 
-    void publish(String item);
+@Secondary
+public class AggregatorServiceImpl implements AggregatorService {
 
-    String consume();
-
-    void delete(String item);
-
-    int stats();
-
-    String permissions();
-
+    @Override
+    public void aggregate() {
+    }
 }

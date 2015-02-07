@@ -10,7 +10,7 @@
 package com.github.lukaszbudnik.gugis.test;
 
 import com.github.lukaszbudnik.gugis.GugisException;
-import com.github.lukaszbudnik.gugis.GugisModule;
+import com.github.lukaszbudnik.gugis.NonValidatingGugisModule;
 import com.github.lukaszbudnik.gugis.test.helpers.NotificationService1Impl;
 import com.github.lukaszbudnik.gugis.test.helpers.NotificationServiceComposite;
 import org.apache.onami.test.OnamiRunner;
@@ -24,7 +24,7 @@ import org.junit.runner.RunWith;
 import javax.inject.Inject;
 
 @RunWith(OnamiRunner.class)
-@GuiceModules(GugisModule.class)
+@GuiceModules(NonValidatingGugisModule.class)
 public class DisabledAutodiscoveryTest {
 
     @Inject

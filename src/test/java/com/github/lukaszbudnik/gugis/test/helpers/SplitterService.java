@@ -9,16 +9,6 @@
  */
 package com.github.lukaszbudnik.gugis.test.helpers;
 
-public interface QueueService {
-
-    void publish(String item);
-
-    String consume();
-
-    void delete(String item);
-
-    int stats();
-
-    String permissions();
-
+public interface SplitterService {
+    void split();
 }

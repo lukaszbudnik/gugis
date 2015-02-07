@@ -9,16 +9,15 @@
  */
 package com.github.lukaszbudnik.gugis.test.helpers;
 
-public interface QueueService {
+import com.github.lukaszbudnik.gugis.Composite;
+import com.github.lukaszbudnik.gugis.Propagate;
+import com.github.lukaszbudnik.gugis.Propagation;
 
-    void publish(String item);
+@Composite
+public class SplitterServiceComposite implements SplitterService {
 
-    String consume();
-
-    void delete(String item);
-
-    int stats();
-
-    String permissions();
-
+    @Propagate(propagation = Propagation.SECONDARY)
+    @Override
+    public void split() {
+    }
 }
