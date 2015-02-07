@@ -89,10 +89,45 @@ public class ErrorHandlingTest {
         Assert.assertFalse(primary1.wasCalled());
         Assert.assertFalse(primary2.wasCalled());
 
-        // QueueService1Impl and QueueService2Impl delete are throwing exception
-        // consume has allowFailure set to true, but because both implementations
-        // are throwing exception this composite call with fail with GugisException
+        // QueueService1Impl and QueueService2Impl are throwing exception
+        // delete has allowFailure set to true, but because both implementations
+        // are throwing exception this composite call will fail with GugisException
         queueServiceComposite.delete("item");
+    }
+
+    @Test
+    public void shouldSelectSlowerBecauseFasterThrowsException() {
+        Assert.assertFalse(primary1.wasCalled());
+        Assert.assertFalse(primary2.wasCalled());
+
+        // QueueService1Impl is slow (Thread.sleep) but passes
+        // QueueService2Impl is fast but throws exception
+        // stats has allowFailure set to true it should pass
+        // and return value from QueueService1Impl
+        int result = queueServiceComposite.stats();
+
+        Assert.assertTrue(primary1.wasCalled());
+        Assert.assertTrue(primary2.wasCalled());
+        Assert.assertEquals(123, result);
+    }
+
+    @Test
+    public void shouldSelectAlwaysPrimaryAsSecondaryThrowsException() {
+        Assert.assertFalse(primary1.wasCalled());
+        Assert.assertFalse(primary2.wasCalled());
+
+        // permissions' propagation is set to Random with allowFailure = true
+        // but QueueService1Impl is throwing exception
+        // for all calls to permissions QueueService2Impl will succeed
+
+        for (int i = 0; i < 100; i++) {
+            String result = queueServiceComposite.permissions();
+
+            Assert.assertTrue(primary1.wasCalled());
+            Assert.assertTrue(primary2.wasCalled());
+
+            Assert.assertEquals("usera:write;userb:read", result);
+        }
     }
 
 }

@@ -39,4 +39,18 @@ public class QueueService2Impl extends AbstractTestService implements QueueServi
         called();
         throw new RuntimeException(this.getClass().getCanonicalName());
     }
+
+    @Override
+    public int stats() {
+        log.trace("stats");
+        called();
+        throw new RuntimeException(this.getClass().getCanonicalName());
+    }
+
+    @Override
+    public String permissions() {
+        log.trace("permissions");
+        called();
+        return "usera:write;userb:read";
+    }
 }
