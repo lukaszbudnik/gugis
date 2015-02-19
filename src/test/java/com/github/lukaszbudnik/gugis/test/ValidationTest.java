@@ -35,6 +35,8 @@ public class ValidationTest {
             Assert.assertTrue(e.getCause().getMessage().contains("Composite component " + AggregatorServiceComposite.class + " methods [public void aggregate()] marked with @Propagate(propagation = Propagation.PRIMARY) but no primary implementations found"));
             // 3) SplitterServiceComposite does not have @Secondary implementations
             Assert.assertTrue(e.getCause().getMessage().contains("Composite component " + SplitterServiceComposite.class + " methods [public void split()] marked with @Propagate(propagation = Propagation.SECONDARY) but no secondary implementations found"));
+        } catch (Throwable t) {
+            Assert.fail("CreationException expected but got " + t.getClass());
         }
 
     }

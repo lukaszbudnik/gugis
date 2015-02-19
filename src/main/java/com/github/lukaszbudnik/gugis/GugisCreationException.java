@@ -9,27 +9,8 @@
  */
 package com.github.lukaszbudnik.gugis;
 
-import java.util.List;
-
 public class GugisCreationException extends RuntimeException {
-
-    private final String detailedMessage;
-
-    public GugisCreationException(List<String> validationErrors) {
-        StringBuilder messageBuilder = new StringBuilder();
-        messageBuilder.append("The following creation errors were found:");
-        for (int i = 0; i < validationErrors.size(); i++) {
-            messageBuilder.append("\n\n");
-            messageBuilder.append(i + 1);
-            messageBuilder.append(") ");
-            messageBuilder.append(validationErrors.get(i));
-        }
-        fillInStackTrace();
-        detailedMessage = messageBuilder.toString();
+    public GugisCreationException(String message) {
+        super(message);
     }
-
-    public String getMessage() {
-        return detailedMessage;
-    }
-
 }

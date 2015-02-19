@@ -23,7 +23,7 @@ public class QueueService2Impl extends AbstractTestService implements QueueServi
     public void publish(String item) {
         log.trace("publish = " + item);
         called();
-        throw new RuntimeException(this.getClass().getCanonicalName());
+        throw new RuntimeException(this.getClass().getSimpleName() + " exception in publish!");
     }
 
     @Override
@@ -37,7 +37,7 @@ public class QueueService2Impl extends AbstractTestService implements QueueServi
     public void delete(String item) {
         log.trace("delete " + item);
         called();
-        throw new RuntimeException(this.getClass().getCanonicalName());
+        throw new IllegalArgumentException(this.getClass().getSimpleName() + " exception in delete!");
     }
 
     @Override

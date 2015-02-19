@@ -36,7 +36,7 @@ public class QueueService1Impl extends AbstractTestService implements QueueServi
     public void delete(String item) {
         log.trace("delete " + item);
         called();
-        throw new RuntimeException(this.getClass().getCanonicalName());
+        throw new RuntimeException(this.getClass().getSimpleName() + " exception in delete!");
     }
 
     @Override
