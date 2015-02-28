@@ -59,7 +59,7 @@ public class ErrorHandlingTest {
         Assert.assertNotNull(queueServiceComposite);
     }
 
-    @Test(expected = GugisException.class)
+    @Test
     public void shouldFailWithGugisException() {
         Assert.assertFalse(primary1.wasCalled());
         Assert.assertFalse(primary2.wasCalled());
@@ -67,7 +67,13 @@ public class ErrorHandlingTest {
         // QueueService2Impl is throwing exception
         // by default allowFailure is set to false
         // this invocation will throw GugisException
-        queueServiceComposite.publish("test");
+        try {
+            queueServiceComposite.publish("test");
+        } catch (GugisException e) {
+            Assert.assertEquals("java.lang.RuntimeException: " + QueueService2Impl.class.getSimpleName() + " exception in publish!", e.getMessage());
+        } catch (Throwable t) {
+            Assert.fail("GugisException expected but got " + t.getClass());
+        }
     }
 
     @Test
@@ -84,15 +90,28 @@ public class ErrorHandlingTest {
         Assert.assertEquals("consumed 1", result);
     }
 
-    @Test(expected = GugisException.class)
-    public void shouldFailWithGugisExceptionWhenAllowFailureSetToFalseAndAllFailed() {
+    @Test
+    public void shouldFailWithGugisExceptionWhenAllowFailureSetToTrueAndAllFailed() {
         Assert.assertFalse(primary1.wasCalled());
         Assert.assertFalse(primary2.wasCalled());
 
         // QueueService1Impl and QueueService2Impl are throwing exception
         // delete has allowFailure set to true, but because both implementations
         // are throwing exception this composite call will fail with GugisException
-        queueServiceComposite.delete("item");
+        try {
+            queueServiceComposite.delete("item");
+            Assert.fail("GugisException expected");
+        } catch (GugisException e) {
+            // general information that QueueService.delete failed
+            Assert.assertTrue(e.getMessage().contains("No result for ALL found for " + QueueService.class.getCanonicalName() + ".delete"));
+            // detailed errors follow
+            // QueueService1Impl
+            Assert.assertTrue(e.getMessage().contains("java.lang.RuntimeException: " + QueueService1Impl.class.getSimpleName() + " exception in delete!"));
+            // QueueService2Impl
+            Assert.assertTrue(e.getMessage().contains("java.lang.IllegalArgumentException: " + QueueService2Impl.class.getSimpleName() + " exception in delete!"));
+        } catch (Throwable t) {
+            Assert.fail("GugisException expected but got " + t.getClass());
+        }
     }
 
     @Test

@@ -96,15 +96,17 @@ public class GugisReplicatorInterceptor implements MethodInterceptor {
             }
         }
 
-        List<Try<Object>> successList = resultStream.filter(t -> t.isSuccess()).collect(Collectors.toList());
+        List<Try<Object>> tries = resultStream.collect(Collectors.toList());
 
-        if (successList.size() == 0) {
-            log.error("No result for " + propagate.propagation() + " implementation found for " + clazz + "." + i.getMethod().getName());
-            throw new GugisException("No result for " + propagate.propagation() + " found for " + clazz + "." + i.getMethod().getName());
+        List<Try<Object>> successes = tries.stream().filter(t -> t.isSuccess()).collect(Collectors.toList());
+
+        if (successes.size() == 0) {
+            String errorMessage = ErrorMessageBuilder.buildErrorMessageFromTries("No result for " + propagate.propagation() + " found for " + clazz.getCanonicalName() + "." + i.getMethod().getName(), tries);
+            throw new GugisException(errorMessage);
         }
 
         // all implementations should be homogeneous and should return same value for same arguments
-        Try<Object> tryObject = successList.get(0);
+        Try<Object> tryObject = successes.get(0);
 
         if (log.isDebugEnabled()) {
             log.debug("Method " + i.getMethod() + " returns " + tryObject.get());
@@ -120,7 +122,8 @@ public class GugisReplicatorInterceptor implements MethodInterceptor {
                 return new Success<Object>(MethodUtils.invokeMethod(component, methodName, arguments));
             } catch (InvocationTargetException e) {
                 if (!allowFailure) {
-                    throw new GugisException(e);
+                    // pass the original exception thrown
+                    throw new GugisException(e.getCause());
                 }
                 return new Failure<Object>(e.getCause());
             } catch (NoSuchMethodException | IllegalAccessException e) {

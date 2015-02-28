@@ -88,7 +88,8 @@ public class GugisModule extends AbstractModule {
         }
 
         if (validationErrors.size() > 0) {
-            throw new GugisCreationException(validationErrors);
+            String errorMessage = ErrorMessageBuilder.buildErrorMessageFromStrings("The following creation errors were found:", validationErrors);
+            throw new GugisCreationException(errorMessage);
         }
 
     }
