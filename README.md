@@ -7,7 +7,7 @@ Gugis automatically binds multiple implementations of the same interface to a co
 
 # Getting started
 
-Let's assume we have a `StorageService` interface. It has two implementations `StorageService1Impl` and `StorageService2Impl`. Let's pretend that the first implementation uses Amazon S3 and the second one uses HP Blobstore.
+Let's assume we have a `StorageService` interface. It has two implementations `StorageService1Impl` and `StorageService2Impl`. Let's pretend that the first implementation uses Amazon S3 and the other one uses Rackspace Cloud Files.
 
 ## Primary and secondary
 
@@ -37,7 +37,7 @@ Note: `Propagation.FASTEST` and `Propagation.RANDOM` return just one call. `allo
 
 When creating an injector using `Guice.createInjector()` we need to tell Guice to use `GugisModule.`
 
-Gugis automatically scans classpath for classes marked with `@Composite`. Autodiscovery can be disabled by setting annotation's `autodiscovery` parameter to `false`. See unit tests for how to disable autodiscovery and use manual discovery instead if you need more complex setup.
+Gugis automatically scans classpath for classes marked with `@Composite` annotation. If you need more complex setup you can disable autodiscovery by setting `autodiscovery` parameter to `false`. See unit tests for how to disable autodiscovery and use manual discovery instead.
 
 After that all you have to do is to inject `CompositeStorageService` class using for example `@Inject` annotation or programmatically using `injector.getInstance()`.
 
@@ -53,11 +53,11 @@ Use the following Maven dependency:
 <dependency>
   <groupId>com.github.lukaszbudnik.gugis</groupId>
   <artifactId>gugis</artifactId>
-  <version>0.4</version>
+  <version>{version}</version>
 </dependency>
 ```
 
-or open [search.maven.org](http://search.maven.org/#artifactdetails|com.github.lukaszbudnik.gugis|gugis|0.4|jar) and copy and paste dependency id for your favourite dependency management tool (Gradle (gugis uses Gradle), Buildr, Ivy, sbt, Leiningen, etc).
+or open [search.maven.org](http://search.maven.org/#search|ga|1|com.github.lukaszbudnik.gugis) and copy and paste dependency id for your favourite dependency management tool (Gradle (gugis uses Gradle), Buildr, Ivy, sbt, Leiningen, etc).
 
 # Road map
 
