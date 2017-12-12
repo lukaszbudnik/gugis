@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Slf4j
-public class GugisReplicatorInterceptor implements MethodInterceptor {
+public class GugisInterceptor implements MethodInterceptor {
 
     @Inject
     private Injector injector;

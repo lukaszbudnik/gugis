@@ -1,9 +1,11 @@
-gugis [![Build Status](https://travis-ci.org/lukaszbudnik/gugis.svg?branch=master)](https://travis-ci.org/lukaszbudnik/gugis) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.lukaszbudnik.gugis/gugis/badge.svg?style=flat)](https://maven-badges.herokuapp.com/maven-central/com.github.lukaszbudnik.gugis/gugis)
+Gugis [![Build Status](https://travis-ci.org/lukaszbudnik/gugis.svg?branch=master)](https://travis-ci.org/lukaszbudnik/gugis) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.lukaszbudnik.gugis/gugis/badge.svg?style=flat)](https://maven-badges.herokuapp.com/maven-central/com.github.lukaszbudnik.gugis/gugis)
 ==============================
 
-Lightweight and robust framework for creating composite components using Guice.
+Lightweight and robust framework for creating composite components using Guice and Java 8 parallel streams!
 
 Gugis automatically binds multiple implementations of the same interface to a composite component. When a call to composite component is being made Gugis automatically calls all found implementations. Gugis defines two types of implementations: primary and secondary. A typical use case would be disaster recovery where write operations (create, update, delete) would be routed to all implementations, other operations would be routed to only primaries, some to secondaries, and some operations (like read operations) may be routed to any implementation. See getting started for more information.
+
+Gugis uses Java 8 parallel streams and... requires JVM 8 to run. If you are stuck with older versions of Java (6 and 7) there is a [Gugis-Rx](https://github.com/lukaszbudnik/gugis-rx) fork which instead of using Java 8 parallel streams uses Guava and JavaRx. However, it must be noted that Gugis-Rx is (very) much slower and does not offer all the features compared to the original Gugis project.
 
 # Getting started
 

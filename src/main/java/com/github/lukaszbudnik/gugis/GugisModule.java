@@ -38,9 +38,9 @@ public class GugisModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        GugisReplicatorInterceptor gugisReplicatorInterceptor = new GugisReplicatorInterceptor();
-        requestInjection(gugisReplicatorInterceptor);
-        bindInterceptor(Matchers.any(), Matchers.annotatedWith(Propagate.class), gugisReplicatorInterceptor);
+        GugisInterceptor gugisInterceptor = new GugisInterceptor();
+        requestInjection(gugisInterceptor);
+        bindInterceptor(Matchers.any(), Matchers.annotatedWith(Propagate.class), gugisInterceptor);
 
         List<String> validationErrors = new ArrayList<String>();
 
