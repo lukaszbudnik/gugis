@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015 Łukasz Budnik <lukasz.budnik@gmail.com>
+ * Copyright (C) 2015-2017 Łukasz Budnik <lukasz.budnik@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
  *
@@ -38,9 +38,9 @@ public class GugisModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        GugisReplicatorInterceptor gugisReplicatorInterceptor = new GugisReplicatorInterceptor();
-        requestInjection(gugisReplicatorInterceptor);
-        bindInterceptor(Matchers.any(), Matchers.annotatedWith(Propagate.class), gugisReplicatorInterceptor);
+        GugisInterceptor gugisInterceptor = new GugisInterceptor();
+        requestInjection(gugisInterceptor);
+        bindInterceptor(Matchers.any(), Matchers.annotatedWith(Propagate.class), gugisInterceptor);
 
         List<String> validationErrors = new ArrayList<String>();
 

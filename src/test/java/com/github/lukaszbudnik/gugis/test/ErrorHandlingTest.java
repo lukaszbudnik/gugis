@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015 Łukasz Budnik <lukasz.budnik@gmail.com>
+ * Copyright (C) 2015-2017 Łukasz Budnik <lukasz.budnik@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
  *
@@ -15,6 +15,7 @@ import com.github.lukaszbudnik.gugis.test.helpers.QueueService;
 import com.github.lukaszbudnik.gugis.test.helpers.QueueService1Impl;
 import com.github.lukaszbudnik.gugis.test.helpers.QueueService2Impl;
 import com.github.lukaszbudnik.gugis.test.helpers.QueueServiceComposite;
+import com.google.common.base.Throwables;
 import org.apache.onami.test.OnamiRunner;
 import org.apache.onami.test.annotation.GuiceModules;
 import org.junit.After;
@@ -70,7 +71,7 @@ public class ErrorHandlingTest {
         try {
             queueServiceComposite.publish("test");
         } catch (GugisException e) {
-            Assert.assertEquals("java.lang.RuntimeException: " + QueueService2Impl.class.getSimpleName() + " exception in publish!", e.getMessage());
+            Assert.assertEquals(QueueService2Impl.class.getSimpleName() + " exception in publish!", Throwables.getRootCause(e).getMessage());
         } catch (Throwable t) {
             Assert.fail("GugisException expected but got " + t.getClass());
         }

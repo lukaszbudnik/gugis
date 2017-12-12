@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015 Łukasz Budnik <lukasz.budnik@gmail.com>
+ * Copyright (C) 2015-2017 Łukasz Budnik <lukasz.budnik@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
  *
@@ -129,10 +129,14 @@ public class BasicTest {
 
         String result = storageServiceComposite.fastGet(0);
 
-        // all components were called
-        Assert.assertTrue(primary1.wasCalled());
-        Assert.assertTrue(secondary.wasCalled());
-        Assert.assertTrue(primary2.wasCalled());
+        // on slow machines, like Travis :)
+        // the slow components may not even get a chance to be called
+        // this is how fast Gugis is!
+
+        // Assert.assertTrue(primary1.wasCalled()); // 750ms
+        // Assert.assertTrue(secondary.wasCalled()); // 1000ms
+        // the fastest implementation is primary2 - it must be called
+        Assert.assertTrue(primary2.wasCalled()); // 500ms
 
         // the fastest is StorageService3Impl
         Assert.assertEquals("null 3 - the fastest", result);
